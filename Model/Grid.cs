@@ -80,61 +80,95 @@ namespace Model
         /// </summary>
         /// <param name="columnIndex">Индекс строки для скролла</param>
         /// <param name="length">Количество ячеек на которое происходит скролл. Если больше нуля - скролл вправо, если меньше - влево</param>
-        private void ScrollRow(int rowIndex, int length)
+        public void ScrollRow(int rowIndex, int length)
         {
+            while (length >= Height)
+                length -= Height;
+            while (length < 0)
+                length += Height;
+
+            var elem = cells[0, rowIndex].Element;
+            for (var i = 0; i < Height; ++i)
+            {
+                var colIndex = i + length >= Height ? i + length - Height : i + length;
+                cells[i, rowIndex].Element = cells[colIndex, rowIndex].Element;
+            }
         }
 
-
-        private void CheckColumns()
+        /// <summary>
+        /// Найти вертикальную последовательность ячеек (минимум 3) с одинаковыми элементами
+        /// </summary>
+        /// <returns>Найденную последовательность или null</returns>
+        public Cell[] FindVerticalMatch()
         {
-            bool check = false;
-            //do
+            for (var j = 0; j < Width; ++j)
             {
-                check = false;
-                for (var j = 0; j < Width; ++j)
-                {
-                    var col = new Cell[Height];
-                    for (var i = 0; i < Height - 1; ++i)
-                        col[i] = cells[j, i];
+                var col = new Cell[Height];
+                for (var i = 0; i < Height - 1; ++i)
+                    col[i] = cells[j, i];
 
-                    var sequence = new List<Cell>();
-                    sequence.Add(col[0]);
-                    for (var i = 0; i < Height - 1; ++i)
+                var sequence = new List<Cell>();
+                sequence.Add(col[0]);
+                for (var i = 0; i < Height - 1; ++i)
+                {
+                    if (col[i].Element.State == col[i].Up.Element.State)
                     {
-                        if (col[i].Element.State == col[i].Up.Element.State)
+                        sequence.Add(col[i].Up);
+                    }
+                    else
+                    {
+                        if (sequence.Count < 3)
                         {
+                            sequence.Clear();
                             sequence.Add(col[i].Up);
                         }
-                        else
-                        {
-                            if (sequence.Count < 3)
-                            {
-                                sequence.Clear();
-                                sequence.Add(col[i].Up);
-                            }
-                        }
                     }
-
-                    if (sequence.Count > 2)
-                    {
-                        DestroyColumn(sequence);
-                        check = true;
-                        //c.Element.renderer.material.color = Color.red;
-                        //Destroy(c.Element.gameObject);
-                    }
-                    //    else
-                    //        return;
                 }
+
+                if (sequence.Count > 2)
+                {
+                    return sequence.ToArray();
+                }
+
+
             }
-            //while (check);
+            return null;
         }
 
-        private void CheckRows()
+        /// <summary>
+        /// Освободить ячейки <see cref="sequence"/>, спустить на их место стоявшие сверху элементы, заполнить освободившееся место новыми элементами
+        /// </summary>
+        /// <param name="sequence">Последовательность ячеек для освобождения</param>
+        public void DestroyVerticalSequence(Cell[] sequence)
         {
-            bool check = false;
-            //  do
+            var destroyableElements = new List<Element>();
+            foreach (var c in sequence)
+                destroyableElements.Add(c.Element);
+
+
+            var aboveCell = sequence[sequence.Length - 1].Up;
+            var currCell = sequence[0];
+            while (aboveCell != null)
             {
-                check = false;
+                currCell.Element = aboveCell.Element;
+                currCell = currCell.Up;
+                aboveCell = aboveCell.Up;
+            }
+
+            foreach (var e in destroyableElements)
+            {
+                currCell.Element = e;
+                e.Init();
+                currCell = currCell.Up;
+            }
+        }
+
+        /// <summary>
+        /// Найти горизонтальную последовательность ячеек (минимум 3) с одинаковыми элементами
+        /// </summary>
+        /// <returns>Найденную последовательность или null</returns>
+        private Cell[] FindHorizontalMatch()
+        {
                 for (var j = 0; j < Height; ++j)
                 {
                     var row = new Cell[Width];
@@ -161,49 +195,20 @@ namespace Model
                     }
                     if (sequence.Count > 2)
                     {
-                        DestroyRow(sequence);
-                        check = true;
-                        //c.Element.renderer.material.color = Color.red;
-                        //Destroy(c.Element.gameObject);
+                        return sequence.ToArray();
+//                        DestroyRow(sequence);
                     }
-                    //    else
-                    //        return;
                 }
-            }
-            //      while(check);
-        }
-
-        //Уничтожить вертикальную секвенцию и переместить все верхние ячейки на их место
-        public void DestroyColumn(List<Cell> sequence)
-        {
-            var destroyableElements = new List<Element>();
-            foreach (var c in sequence)
-                destroyableElements.Add(c.Element);
-
-
-            var aboveCell = sequence[sequence.Count - 1].Up;
-            var currCell = sequence[0];
-            while (aboveCell != null)
-            {
-                currCell.Element = aboveCell.Element;
-//                currCell.Element.MoveToPosition(currCell.transform.position);
-                currCell = currCell.Up;
-                aboveCell = aboveCell.Up;
-            }
-
-            foreach (var e in destroyableElements)
-            {
-                currCell.Element = e;
-                e.Init();
-//                currCell.Element.transform.position = currCell.transform.position;
-                currCell = currCell.Up;
-
-            }
+                return null;
         }
 
 
-        //Уничтожить горизонтальную секвенцию и переместить все верхние ячейки на их место
-        public void DestroyRow(List<Cell> sequence)
+
+
+        ///<summary>
+        /// Уничтожить горизонтальную секвенцию и переместить все верхние ячейки на их место
+        /// </summary>
+        public void DestroyHorizontalSequence(Cell[] sequence)
         {
             foreach (var c in sequence)
             {
@@ -213,13 +218,23 @@ namespace Model
                 while (cell.Up != null)
                 {
                     cell.Element = cell.Up.Element;
-    //                cell.Element.MoveToPosition(cell.transform.position);
                     cell = cell.Up;
                 }
                 destroyableElement.Init();
                 cell.Element = destroyableElement;
-    //            cell.Element.transform.position = cell.transform.position;
             }
+        }
+
+        public event Action<Cell[]> SequenceDestroyed
+        {
+            add { sequenceDestroyed += value; }
+            remove { sequenceDestroyed -= value; }
+        }
+        private Action<Cell[]> sequenceDestroyed;
+        public void OnSequenceDestroyed(Cell[] sequence)
+        {
+            var h = sequenceDestroyed;
+            if (h != null) h(sequence);
         }
     }
 }

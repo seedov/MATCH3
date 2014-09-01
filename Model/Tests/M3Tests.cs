@@ -40,7 +40,10 @@ namespace Tests
             }
 
             foreach (var c in grid.Cells)
+            {
                 Assert.IsNotNull(c.Element);
+                Assert.AreNotEqual(State.empty, c.Element.State);
+            }
         }
 
         [TestMethod]
@@ -78,5 +81,91 @@ namespace Tests
 
             
         }
+        [TestMethod]
+        public void TestScrollRow()
+        {
+            var w = 6;
+            var h = 6;
+
+            var grid = new Grid(w, h);
+
+            var rowState = new State[w];
+            for (var stepsCnt = -h; stepsCnt < h; ++stepsCnt)
+            {
+                for (var i = 0; i < h; ++i)
+                {
+
+                    for (var j = 0; j < w; ++j)
+                    {
+                        rowState[j] = grid.Cells[j, i].Element.State;
+                    }
+
+                    grid.ScrollRow(i, stepsCnt);
+
+                    for (var j = 0; j < w; ++j)
+                    {
+                        if (stepsCnt < 0) stepsCnt += w;
+                        var colIndex = j + stepsCnt >= w ? (j + stepsCnt) - w : j + stepsCnt;
+
+                        Assert.AreEqual(rowState[colIndex], grid.Cells[i, j].Element.State);
+                    }
+                    //Assert.AreEqual(columnState[0], grid.Cells[i, h - 1].Element.State);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestMatchColumns()
+        {
+            var w = 4;
+            var h = 6;
+
+            var grid = new Grid(w, h);
+
+            //назначить всем элементам в столбцах разные значения
+            for (var j = 0; j < h; ++j)
+            {
+                for (var i = 0; i < w; ++i )
+                    grid.Cells[i, j].Element.State = (State)(j + 1);
+            }
+
+            //сделать вертикальную последовательность из трех элементов
+            for (var j = 0; j < 3; ++j)
+            {
+                grid.Cells[0, j].Element.State = State.s1;
+                grid.Cells[2, j].Element.State = State.s2;
+            }
+
+            //найти вертикальную последовательность
+            var verticalSequense = grid.FindVerticalMatch();
+
+            Assert.IsNotNull(verticalSequense);
+
+            for (var j = 0; j < 3; ++j)
+                Assert.AreEqual(verticalSequense[j], grid.Cells[0, j]);
+
+            grid.DestroyVerticalSequence(verticalSequense);
+
+            //на место уничтоженных элементов опустились верхние
+            for (var j = 0; j < 3; ++j)
+                Assert.AreEqual((State)(j+1+3), grid.Cells[0, j].Element.State);
+
+            //освободившееся место - пусто
+//            for (var j = 3; j < h; ++j)
+//                Assert.AreEqual(State.empty, grid.Cells[0, j].Element.State);
+
+            for (var j = 3; j < h; ++j)
+                grid.Cells[0, j].Element.State = (State)j;
+
+            //найти еще вертикальную последовательность
+            verticalSequense = grid.FindVerticalMatch();
+
+            Assert.IsNotNull(verticalSequense);
+
+            grid.DestroyVerticalSequence(verticalSequense);
+
+
+        }
+
     }
 }
