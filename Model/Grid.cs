@@ -65,12 +65,18 @@ namespace Model
                 length -= Height;
             while (length < 0)
                 length += Height;
+            if (length == 0) return;
 
-            var elem = cells[columnIndex, 0].Element;
-            for (var i=0; i<Height; ++i)
+
+            for (var l = 0; l < length; ++l)
             {
-                var rowIndex = i + length >= Height ? i+length -Height : i + length;
-                cells[columnIndex, i].Element = cells[columnIndex, rowIndex].Element;
+                var firstElem = cells[columnIndex, 0].Element;
+                for (var i = 0; i < Height - 1; ++i)
+                {
+                    var rowIndex = i + 1 >= Height ? i + 1 - Height : i + 1;
+                    cells[columnIndex, i].Element = cells[columnIndex, rowIndex].Element;
+                }
+                cells[columnIndex, Height - 1].Element = firstElem;
             }
 
         }
@@ -86,12 +92,19 @@ namespace Model
                 length -= Height;
             while (length < 0)
                 length += Height;
+            if (length == 0) return;
 
-            var elem = cells[0, rowIndex].Element;
-            for (var i = 0; i < Height; ++i)
+            for (var l = 0; l < length; ++l)
             {
-                var colIndex = i + length >= Height ? i + length - Height : i + length;
-                cells[i, rowIndex].Element = cells[colIndex, rowIndex].Element;
+                var firstElem = cells[0, rowIndex].Element;
+
+
+                for (var i = 0; i < Width-1; ++i)
+                {
+                    var colIndex = i + 1 >= Width ? i + 1 - Width : i + 1;
+                    cells[i, rowIndex].Element = cells[colIndex, rowIndex].Element;
+                }
+                cells[Width - 1, rowIndex].Element = firstElem;
             }
         }
 
@@ -167,7 +180,7 @@ namespace Model
         /// Найти горизонтальную последовательность ячеек (минимум 3) с одинаковыми элементами
         /// </summary>
         /// <returns>Найденную последовательность или null</returns>
-        private Cell[] FindHorizontalMatch()
+        public Cell[] FindHorizontalMatch()
         {
                 for (var j = 0; j < Height; ++j)
                 {
@@ -202,9 +215,6 @@ namespace Model
                 return null;
         }
 
-
-
-
         ///<summary>
         /// Уничтожить горизонтальную секвенцию и переместить все верхние ячейки на их место
         /// </summary>
@@ -224,6 +234,33 @@ namespace Model
                 cell.Element = destroyableElement;
             }
         }
+
+        /// <summary>
+        /// Уничтожить произвольную последовательность и провалить все элементы, которые находились над уничтоженными
+        /// </summary>
+        /// <param name="sequence">Уничтожаемая последовательность</param>
+        public void DestroySequence(Cell[] sequence)
+        {
+            //разделить полученную последовательность на вертикальные и горизонтальные
+            sequence..Where(c=>c.ColIndex
+
+
+            foreach (var c in sequence)
+            {
+                var destroyableElement = c.Element;
+
+                var cell = c;
+                while (cell.Up != null && !sequence.Contains(cell.Up))
+                {
+                    cell.Element = cell.Up.Element;
+                    cell = cell.Up;
+                }
+                destroyableElement.Init();
+                cell.Element = destroyableElement;
+            }
+        }
+
+
 
         public event Action<Cell[]> SequenceDestroyed
         {

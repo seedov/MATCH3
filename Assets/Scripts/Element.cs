@@ -36,7 +36,7 @@ public class Element : MonoBehaviour {
     private IEnumerator WaitAndSetVisible()
     {
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(.2f);
 //        this.sprite.sprite = newSprite;
 //        State = (State)int.Parse(sprite.name);
         transform.localScale = Vector3.one;

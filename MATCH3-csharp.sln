@@ -1,24 +1,11 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-vs", "Assembly-CSharp-vs.csproj", "{B22EFC3A-8601-92FA-2821-AA4047D4CB8F}"
+# Visual Studio 2008
+
+Project("{61F3272D-DE27-33C6-CBB7-C6C29DDB40C9}") = "MATCH3", "Assembly-CSharp-vs.csproj", "{B22EFC3A-8601-92FA-2821-AA4047D4CB8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-vs", "Assembly-CSharp-Editor-vs.csproj", "{AAA75689-B86F-2ED7-AE85-946563E6CFE9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{0AFBA83C-106E-4844-A133-B2A81A41F54B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Model\Tests\Tests.csproj", "{964C8338-27A0-4137-932F-2E0318FA7956}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4667B289-AB57-438B-AE9D-DE75D1B4FD1B}"
-	ProjectSection(SolutionItems) = preProject
-		Local.testsettings = Local.testsettings
-		MATCH3-csharp.vsmdi = MATCH3-csharp.vsmdi
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
+Project("{61F3272D-DE27-33C6-CBB7-C6C29DDB40C9}") = "MATCH3", "Assembly-CSharp-Editor-vs.csproj", "{AAA75689-B86F-2ED7-AE85-946563E6CFE9}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = MATCH3-csharp.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -32,29 +19,20 @@ Global
 		{AAA75689-B86F-2ED7-AE85-946563E6CFE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAA75689-B86F-2ED7-AE85-946563E6CFE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAA75689-B86F-2ED7-AE85-946563E6CFE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0AFBA83C-106E-4844-A133-B2A81A41F54B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0AFBA83C-106E-4844-A133-B2A81A41F54B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0AFBA83C-106E-4844-A133-B2A81A41F54B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0AFBA83C-106E-4844-A133-B2A81A41F54B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{964C8338-27A0-4137-932F-2E0318FA7956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{964C8338-27A0-4137-932F-2E0318FA7956}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{964C8338-27A0-4137-932F-2E0318FA7956}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{964C8338-27A0-4137-932F-2E0318FA7956}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
+											GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
-		$0.TextStylePolicy = $1
+		$0.TextStylePolicy = $3
 		$1.inheritsSet = null
 		$1.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $2
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
-		$0.TextStylePolicy = $3
 		$3.FileWidth = 120
 		$3.TabWidth = 4
 		$3.EolMarker = Unix
@@ -62,4 +40,5 @@ Global
 		$3.inheritsScope = text/plain
 		$3.scope = text/plain
 	EndGlobalSection
+
 EndGlobal
