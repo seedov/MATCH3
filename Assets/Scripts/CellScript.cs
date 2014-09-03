@@ -34,5 +34,6 @@ public class CellScript : MonoBehaviour {
         if (Element.Element == null) return;
         ElementState = Cell.Element.State.ToString();
         Element.Element.State = Cell.Element.State;
+        Element.Element.Effect = Cell.Element.Effect;
     }
 }

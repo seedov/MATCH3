@@ -5,9 +5,11 @@ using System;
 
 public class ElementScript : MonoBehaviour {
     public string ElementState;
+    public string ElementEffect;
     private SpriteRenderer sprite;
     private Model.Element element = new Model.Element();
     private Sprite[] sprites;
+    private TextMesh text;
 
     public Model.Element Element
     {
@@ -27,11 +29,33 @@ public class ElementScript : MonoBehaviour {
 	void Update () {
         if (Element == null) return;
         ElementState = Element.State.ToString();
-        sprite.sprite = Array.Find(sprites, s=>s.name ==Element.State.ToString()[1].ToString());
+        ElementEffect = Element.Effect.ToString();
+        switch (Element.Effect)
+        {
+            case Model.Effects.radius:
+            case Model.Effects.cross:
+            case Model.Effects.all:
+                text.text = Element.Effect.ToString();
+                break;
+
+            case Model.Effects.no:
+            default:
+                text.text = "";
+                break;
+        }
+        if (Element.State == Model.State.uni)
+        {
+            sprite.sprite = Array.Find(sprites, s => s.name == "skype");
+        }
+        else
+        {
+            sprite.sprite = Array.Find(sprites, s => s.name == Element.State.ToString()[1].ToString());
+        }
        // print(sprite.sprite);
 	}
     void Awake()
     {
+        text = GetComponentInChildren<TextMesh>();
         sprite = GetComponent<SpriteRenderer>();
         sprites = Resources.LoadAll<Sprite>("");
     }

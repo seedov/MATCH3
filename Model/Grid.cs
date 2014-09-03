@@ -71,10 +71,10 @@ namespace Model
             for (var l = 0; l < length; ++l)
             {
                 var firstElem = cells[columnIndex, 0].Element;
-                for (var i = 0; i < Height - 1; ++i)
+                for (var j = 0; j < Height - 1; ++j)
                 {
-                    var rowIndex = i + 1 >= Height ? i + 1 - Height : i + 1;
-                    cells[columnIndex, i].Element = cells[columnIndex, rowIndex].Element;
+                    var rowIndex = j + 1 >= Height ? j + 1 - Height : j + 1;
+                    cells[columnIndex, j].Element = cells[columnIndex, rowIndex].Element;
                 }
                 cells[columnIndex, Height - 1].Element = firstElem;
             }
@@ -148,12 +148,41 @@ namespace Model
             return null;
         }
 
+        public Cell[] FindVerticalMatchInSequence(Cell[] sequence)
+        {
+
+            var result = new List<Cell>();
+            result.Add(sequence[0]);
+            for (var i = 0; i < sequence.Length-1; ++i)
+            {
+                if (sequence[i].Up!=null && sequence[i].Up == sequence[i+1] && sequence[i].Element.State == sequence[i+1].Element.State)
+                {
+                    result.Add(sequence[i+1]);
+                }
+                else
+                {
+                    if (result.Count < 3)
+                    {
+                        result.Clear();
+                        result.Add(sequence[i+1]);
+                    }
+                }
+            }
+
+            if (result.Count > 2)
+            {
+                return result.ToArray();
+            }
+            return null;
+        }
+
         /// <summary>
         /// Освободить ячейки <see cref="sequence"/>, спустить на их место стоявшие сверху элементы, заполнить освободившееся место новыми элементами
         /// </summary>
         /// <param name="sequence">Последовательность ячеек для освобождения</param>
         public void DestroyVerticalSequence(Cell[] sequence)
         {
+            sequence = sequence.OrderBy(c => c.RowIndex).ToArray();
             var destroyableElements = new List<Element>();
             foreach (var c in sequence)
                 destroyableElements.Add(c.Element);
@@ -241,11 +270,57 @@ namespace Model
         /// <param name="sequence">Уничтожаемая последовательность</param>
         public void DestroySequence(Cell[] sequence)
         {
-            //разделить полученную последовательность на вертикальные и горизонтальные
-            sequence..Where(c=>c.ColIndex
+            var seq = sequence.ToList();
 
 
+            //проверить каждый элемент на наличие доп. эффектов и применить эти эффекты
             foreach (var c in sequence)
+            {
+                switch (c.Element.Effect)
+                {
+                    case Effects.radius:
+                        if (c.Up != null)
+                        {
+                            if(!seq.Contains(c.Up)) seq.Add(c.Up);
+                            if (c.Up.Right != null)
+                                if (!seq.Contains(c.Up.Right)) seq.Add(c.Up.Right);
+                            if (c.Up.Left != null)
+                                if (!seq.Contains(c.Up.Left)) seq.Add(c.Up.Left);
+                        }
+                        if (c.Down != null)
+                        {
+                            if (!seq.Contains(c.Down)) seq.Add(c.Down);
+                            if (c.Down.Right != null)
+                                if (!seq.Contains(c.Down.Right)) seq.Add(c.Down.Right);
+                            if (c.Down.Left != null)
+                                if (!seq.Contains(c.Down.Left)) seq.Add(c.Down.Left);
+                        }
+                        if (c.Right != null)
+                            if (!seq.Contains(c.Right)) seq.Add(c.Right);
+                        if (c.Left != null)
+                            if (!seq.Contains(c.Left)) seq.Add(c.Left);
+
+                        sequence = seq.ToArray();
+
+                        break;
+                }
+            }
+
+            var vertSequences = sequence.GroupBy(c => c.ColIndex); // FindVerticalMatchInSequence(sequence);
+
+            Cell[] notVertSeq= sequence.ToArray(); 
+            if (sequence.Length < 3) return;
+
+            foreach (var vertSeq in vertSequences)
+            {
+                if (vertSeq != null)
+                {
+                    DestroyVerticalSequence(vertSeq.ToArray());
+                    notVertSeq = notVertSeq.Except(vertSeq).ToArray();
+                }
+            }
+
+            foreach (var c in notVertSeq)
             {
                 var destroyableElement = c.Element;
 
@@ -258,8 +333,9 @@ namespace Model
                 destroyableElement.Init();
                 cell.Element = destroyableElement;
             }
-        }
 
+            OnSequenceDestroyed(sequence);
+        }
 
 
         public event Action<Cell[]> SequenceDestroyed
@@ -270,8 +346,30 @@ namespace Model
         private Action<Cell[]> sequenceDestroyed;
         public void OnSequenceDestroyed(Cell[] sequence)
         {
+            var last = sequence[sequence.Length - 1];
+            switch (sequence.Length)
+            {
+                case 4:
+                    last.Element.State = State.uni;
+                    break;
+                case 5:
+                    last.Element.Effect = Effects.radius;
+                    break;
+                case 6:
+                    last.Element.Effect = Effects.cross;
+                    break;
+                case 7:
+                    last.Element.Effect = Effects.all;
+                    break;
+                default:
+                    last.Element.Effect = Effects.no;
+                    break;
+            }
+
             var h = sequenceDestroyed;
             if (h != null) h(sequence);
+
+
         }
     }
 }

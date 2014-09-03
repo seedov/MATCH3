@@ -15,6 +15,8 @@ public class GridScript : MonoBehaviour {
     bool movingRow, movingCol;
     bool isDown;
 
+    public Regimes Regime;
+
 
 	// Use this for initialization
 	void Start () {
@@ -49,8 +51,11 @@ public class GridScript : MonoBehaviour {
             }
 
         }
-        Vert();
-        Hor();
+        if (Regime == Regimes.Scroll)
+        {
+            Vert();
+            Hor();
+        }
 	}
 
 
@@ -146,9 +151,26 @@ public class GridScript : MonoBehaviour {
         }
     }
 
-
-    void Update()
+    IEnumerator WaitAndDestroySequence()
     {
+        var vm = selectedCells.ToArray();
+        if (vm != null)
+        {
+            foreach (var c in vm)
+            {
+                cells[c.ColIndex, c.RowIndex].DestroyElement();
+            }
+            yield return new WaitForSeconds(1);
+            foreach (var c in vm)
+                cells[c.ColIndex, c.RowIndex].InitElement();
+
+            grid.DestroySequence(vm);
+            print("VM");
+
+        }
+    }
+
+    private void ScrollRegimeUpdate(){
         if (!isDown)
         {
             foreach (var cell in cells)
@@ -236,6 +258,73 @@ public class GridScript : MonoBehaviour {
                 //      CheckRows(j);
             }
         }
+
+    }
+
+    private List<Model.Cell> selectedCells = new List<Model.Cell>();
+    public List<CellScript> SelectedCells = new List<CellScript>();
+    bool isSelecting;
+    public Model.State seqElementsState;
+    private void LineMarkRegimeUpdate()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            isSelecting = true;
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                var cell = hit.collider.GetComponent<CellScript>();
+                if (cell != null)
+                {
+                    seqElementsState = cell.Cell.Element.State;
+                    selectedCells.Add(cell.Cell);
+                    SelectedCells.Add(cell);
+                }
+            }
+        }
+        if(isSelecting)
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                var cell = hit.collider.GetComponent<CellScript>();
+                if (cell != null)
+                {
+                    //					cell.Element.renderer.material.color = Color.green;
+                    if (!selectedCells.Contains(cell.Cell) && (cell.Cell.Element.State == seqElementsState || cell.Cell.Element.State == Model.State.uni))
+                    {
+                        var lastAddedCell = selectedCells[selectedCells.Count - 1];
+                        if (Mathf.Abs(cell.ColIndex - lastAddedCell.ColIndex) < 2 && Mathf.Abs(cell.RowIndex - lastAddedCell.RowIndex) < 2)
+                        {
+                            selectedCells.Add(cell.Cell);
+                            SelectedCells.Add(cell);
+                        }
+                    }
+                }
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isSelecting = false;
+            StartCoroutine(WaitAndDestroySequence());
+            selectedCells.Clear();
+            SelectedCells.Clear();
+
+        }
+    }
+    void Update()
+    {
+        switch (Regime){
+            case Regimes.Scroll:
+                ScrollRegimeUpdate();
+                break;
+            case Regimes.LineMark:
+                LineMarkRegimeUpdate();
+                break;
+        }
+        
     }
 
     private void MoveColumn(int columnIndex, float value)
@@ -274,4 +363,10 @@ public class GridScript : MonoBehaviour {
         }
     }
 
+}
+
+public enum Regimes
+{
+    Scroll,
+    LineMark
 }

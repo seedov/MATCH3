@@ -22,7 +22,7 @@ namespace Model
         /// </summary>
         /// <param name="row">Индекс строки для данной ячейки</param>
         /// <param name="col">Индекс столбца для данной ячейки</param>
-        public Cell(int row, int col)
+        public Cell(int col, int row)
         {
             RowIndex = row;
             ColIndex = col;
