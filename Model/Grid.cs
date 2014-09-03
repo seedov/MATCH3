@@ -303,6 +303,41 @@ namespace Model
                         sequence = seq.ToArray();
 
                         break;
+                    case Effects.cross:
+                        var cell = c;
+                        while (cell.Up != null)
+                        {
+                            if (!seq.Contains(cell.Up)) 
+                                seq.Add(cell.Up);
+                            cell = cell.Up;
+                        }
+                        cell = c;
+                        while (cell.Down != null)
+                        {
+                            if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
+                            cell = cell.Down;
+                        }
+                        cell = c;
+                        while (cell.Left != null)
+                        {
+                            if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
+                            cell = cell.Left;
+                        }
+                        cell = c;
+                        while (cell.Right != null)
+                        {
+                            if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
+                            cell = cell.Right;
+                        }
+
+                        sequence = seq.ToArray();
+                        break;
+                        
+                    case Effects.all:
+                        foreach (var cl in Cells)
+                            if (!seq.Contains(cl)) seq.Add(cl);
+                        sequence = seq.ToArray();
+                        break;
                 }
             }
 

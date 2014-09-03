@@ -256,7 +256,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestDestroySequenceWithEffects()
+        public void TestDestroySequenceWithRadiusEffect()
         {
             var w = 6;
             var h = 6;
@@ -283,5 +283,40 @@ namespace Tests
                 Assert.AreEqual(Effects.no, c.Element.Effect);
 
         }
+
+        [TestMethod]
+        public void TestDestroySequenceWithCrossEffect()
+        {
+            var w = 6;
+            var h = 6;
+
+            var grid = new Grid(w, h);
+
+
+            grid.Cells[1, 1].Element.State = grid.Cells[1, 2].Element.State = grid.Cells[1, 3].Element.State = State.s2;
+            grid.Cells[1, 3].Element.Effect = Effects.cross;
+
+            //сохранить состояние сетки
+            var gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+
+            grid.DestroySequence(new[] { grid.Cells[1, 1], grid.Cells[1, 2], grid.Cells[1, 3] });
+
+
+
+            Assert.AreEqual(gridState[0, 4], grid.Cells[0, 3].Element.State);
+            Assert.AreEqual(gridState[2, 4], grid.Cells[2, 3].Element.State);
+            Assert.AreEqual(gridState[3, 4], grid.Cells[3, 3].Element.State);
+            Assert.AreEqual(gridState[4, 4], grid.Cells[4, 3].Element.State);
+            Assert.AreEqual(gridState[5, 4], grid.Cells[5, 3].Element.State);
+
+            //убедиться что не передалось эффектов никому
+            foreach (var c in grid.Cells)
+                Assert.AreEqual(Effects.no, c.Element.Effect);
+
+        }
+
     }
 }
