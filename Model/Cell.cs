@@ -15,7 +15,16 @@ namespace Model
         public int RowIndex, ColIndex;
 
 //        public Vector2 CellPosition;
-        public Element Element { get; set; }
+        private Element element;
+        public Element Element
+        {
+            get { return element; }
+            set
+            {
+                element = value;
+                element.OnPositionChanged(this);
+            }
+        }
 
         /// <summary>
         /// Создать новую ячейку

@@ -148,32 +148,54 @@ namespace Model
             return null;
         }
 
-        public Cell[] FindVerticalMatchInSequence(Cell[] sequence)
+        public List<Cell[]> FindVerticalMatchInSequence(Cell[] sequence)
         {
-
-            var result = new List<Cell>();
-            result.Add(sequence[0]);
-            for (var i = 0; i < sequence.Length-1; ++i)
+            var vertSequences = new List<Cell[]>();
+            var vertGroup = sequence.GroupBy(c => c.ColIndex).ToArray(); // FindVerticalMatchInSequence(sequence);
+            foreach (var seq in vertGroup)
             {
-                if (sequence[i].Up!=null && sequence[i].Up == sequence[i+1] && sequence[i].Element.State == sequence[i+1].Element.State)
+                var orderedSequence = seq.OrderBy(c=>c.RowIndex).ToArray();
+                var isGoodSequence = true;
+                for (var i=0;i<orderedSequence.Length-1; ++i)
                 {
-                    result.Add(sequence[i+1]);
-                }
-                else
-                {
-                    if (result.Count < 3)
+                    var cell = orderedSequence[i];
+                    if (cell.Up != null)
                     {
-                        result.Clear();
-                        result.Add(sequence[i+1]);
+                        if (cell.Up != orderedSequence[i + 1])
+                        {
+                            isGoodSequence = false;
+                            break;
+                        }
                     }
                 }
+                if (isGoodSequence)
+                    vertSequences.Add(orderedSequence);
             }
+            return vertSequences;
 
-            if (result.Count > 2)
-            {
-                return result.ToArray();
-            }
-            return null;
+            //var result = new List<Cell>();
+            //result.Add(sequence[0]);
+            //for (var i = 0; i < sequence.Length-1; ++i)
+            //{
+            //    if (sequence[i].Up!=null && sequence[i].Up == sequence[i+1] && sequence[i].Element.State == sequence[i+1].Element.State)
+            //    {
+            //        result.Add(sequence[i+1]);
+            //    }
+            //    else
+            //    {
+            //        if (result.Count < 3)
+            //        {
+            //            result.Clear();
+            //            result.Add(sequence[i+1]);
+            //        }
+            //    }
+            //}
+
+            //if (result.Count > 2)
+            //{
+            //    return result.ToArray();
+            //}
+            //return null;
         }
 
         /// <summary>
@@ -264,11 +286,28 @@ namespace Model
             }
         }
 
+        private Cell[] GetCellsInRadius(int radius, Cell c, Cell[] sequence)
+        {
+            var seq = sequence.ToList();
+
+            var leftColInd = Math.Max(0, c.ColIndex - radius);
+            var downRowInd = Math.Max(0, c.RowIndex - radius);
+            var rightColInd = Math.Min(Width-1, c.ColIndex + radius);
+            var upRowInd = Math.Min(Height-1, c.RowIndex + radius);
+            for(var i=leftColInd; i<=rightColInd; ++i)
+                for (var j = downRowInd; j <= upRowInd; ++j)
+                {
+                    if (!seq.Contains(Cells[i, j])) seq.Add(Cells[i, j]);
+                }
+            return seq.ToArray();
+        }
+
         /// <summary>
-        /// Уничтожить произвольную последовательность и провалить все элементы, которые находились над уничтоженными
+        /// Найти последовательность для уничтожения с учетом всех дополнительных эффектов у элементов в исходной последовательность <see cref=" sequence"/>. Доп эффект когда какойто элемент разрушает помимо себя еще какието элементы
         /// </summary>
-        /// <param name="sequence">Уничтожаемая последовательность</param>
-        public void DestroySequence(Cell[] sequence)
+        /// <param name="sequence">Исходная последовательность без учета доп. эффектов</param>
+        /// <returns>Последовательность с учетом доп. эффектов</returns>
+        public Cell[] FindSequenceToDestroy(Cell[] sequence)
         {
             var seq = sequence.ToList();
 
@@ -278,36 +317,19 @@ namespace Model
             {
                 switch (c.Element.Effect)
                 {
-                    case Effects.radius:
-                        if (c.Up != null)
-                        {
-                            if(!seq.Contains(c.Up)) seq.Add(c.Up);
-                            if (c.Up.Right != null)
-                                if (!seq.Contains(c.Up.Right)) seq.Add(c.Up.Right);
-                            if (c.Up.Left != null)
-                                if (!seq.Contains(c.Up.Left)) seq.Add(c.Up.Left);
-                        }
-                        if (c.Down != null)
-                        {
-                            if (!seq.Contains(c.Down)) seq.Add(c.Down);
-                            if (c.Down.Right != null)
-                                if (!seq.Contains(c.Down.Right)) seq.Add(c.Down.Right);
-                            if (c.Down.Left != null)
-                                if (!seq.Contains(c.Down.Left)) seq.Add(c.Down.Left);
-                        }
-                        if (c.Right != null)
-                            if (!seq.Contains(c.Right)) seq.Add(c.Right);
-                        if (c.Left != null)
-                            if (!seq.Contains(c.Left)) seq.Add(c.Left);
-
-                        sequence = seq.ToArray();
-
+                    case Effects.radius1:
+                        sequence = GetCellsInRadius(1, c, sequence);
                         break;
+
+                    case Effects.radius2:
+                        sequence = GetCellsInRadius(2, c, sequence);
+                        break;
+
                     case Effects.cross:
                         var cell = c;
                         while (cell.Up != null)
                         {
-                            if (!seq.Contains(cell.Up)) 
+                            if (!seq.Contains(cell.Up))
                                 seq.Add(cell.Up);
                             cell = cell.Up;
                         }
@@ -332,7 +354,7 @@ namespace Model
 
                         sequence = seq.ToArray();
                         break;
-                        
+
                     case Effects.all:
                         foreach (var cl in Cells)
                             if (!seq.Contains(cl)) seq.Add(cl);
@@ -340,10 +362,22 @@ namespace Model
                         break;
                 }
             }
+            return sequence;
+        }
 
-            var vertSequences = sequence.GroupBy(c => c.ColIndex); // FindVerticalMatchInSequence(sequence);
+        /// <summary>
+        /// Уничтожить произвольную последовательность и провалить все элементы, которые находились над уничтоженными
+        /// </summary>
+        /// <param name="sequence">Уничтожаемая последовательность</param>
+        public void DestroySequence(Cell[] sequence)
+        {
+            sequence = FindSequenceToDestroy(sequence);
+            var sequenceList = sequence.ToList();
 
-            Cell[] notVertSeq= sequence.ToArray(); 
+            
+            var vertSequences = FindVerticalMatchInSequence(sequence);
+
+            Cell[] notVertSeq= sequence;
             if (sequence.Length < 3) return;
 
             foreach (var vertSeq in vertSequences)
@@ -355,17 +389,20 @@ namespace Model
                 }
             }
 
-            foreach (var c in notVertSeq)
+            notVertSeq = notVertSeq.OrderByDescending(c => c.RowIndex).ToArray();
+
+            foreach (var c in  notVertSeq)
             {
                 var destroyableElement = c.Element;
 
                 var cell = c;
-                while (cell.Up != null && !sequence.Contains(cell.Up))
+                while (cell.Up != null && !sequenceList.Contains(cell.Up))
                 {
                     cell.Element = cell.Up.Element;
                     cell = cell.Up;
                 }
                 destroyableElement.Init();
+                sequenceList.Remove(c);
                 cell.Element = destroyableElement;
             }
 
@@ -388,13 +425,13 @@ namespace Model
                     last.Element.State = State.uni;
                     break;
                 case 5:
-                    last.Element.Effect = Effects.radius;
+                    last.Element.Effect = Effects.radius1;
                     break;
                 case 6:
                     last.Element.Effect = Effects.cross;
                     break;
                 case 7:
-                    last.Element.Effect = Effects.all;
+                    last.Element.Effect = Effects.radius2;
                     break;
                 default:
                     last.Element.Effect = Effects.no;

@@ -22,6 +22,7 @@ namespace Model
 
         public void Init()
         {
+            OnDestroyed();
             State = (State)GetNextRandomState();
             Effect = Effects.no;
         }
@@ -66,7 +67,8 @@ namespace Model
     public enum Effects
     {
         no,//нет эффекта
-        radius,//уничтожает еще все элементы в радиусе 1
+        radius1,//уничтожает еще все элементы в радиусе 1
+        radius2,//уничтожает еще все элементы в радиусе 2 
         cross,//уничтожает все элементы в данном столбце и строке
         all//уничтожает все элементы
     }

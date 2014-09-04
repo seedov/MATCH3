@@ -15,7 +15,7 @@ public class CellScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-
+//        Cell.Element.CellChanged += (c) => print("cell changed");
     }
 
     public void DestroyElement()
@@ -31,9 +31,10 @@ public class CellScript : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (Element == null) return;
         if (Element.Element == null) return;
         ElementState = Cell.Element.State.ToString();
-        Element.Element.State = Cell.Element.State;
-        Element.Element.Effect = Cell.Element.Effect;
+//        Element.Element.State = Cell.Element.State;
+//        Element.Element.Effect = Cell.Element.Effect;
     }
 }

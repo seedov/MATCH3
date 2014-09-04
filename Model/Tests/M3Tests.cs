@@ -235,8 +235,40 @@ namespace Tests
             Assert.AreEqual(gridState[0, 2], grid.Cells[0, 1].Element.State);
             Assert.AreEqual(gridState[1, 2], grid.Cells[1, 1].Element.State);
             Assert.AreEqual(gridState[2, 5], grid.Cells[2, 2].Element.State);
+        }
 
-            
+        [TestMethod]
+        public void TestDestroySequenceWithHole()
+        {
+            var w = 6;
+            var h = 6;
+
+            var grid = new Grid(w, h);
+
+            var gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+
+            var sequence = new Cell[] {
+            grid.Cells[1, 1],  
+            grid.Cells[2, 1],  
+            grid.Cells[3, 1],  
+            grid.Cells[3, 2], 
+            grid.Cells[3, 3], 
+            grid.Cells[2, 3], 
+            grid.Cells[1, 3], 
+            };
+            foreach(var c in sequence)
+                c.Element.State = State.s4;
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 2], grid.Cells[1, 1].Element.State);
+            Assert.AreEqual(gridState[2, 2], grid.Cells[2, 1].Element.State);
+            Assert.AreEqual(gridState[3, 4], grid.Cells[3, 1].Element.State);
+            Assert.AreEqual(gridState[1, 4], grid.Cells[1, 2].Element.State);
+            Assert.AreEqual(gridState[2, 4], grid.Cells[2, 2].Element.State);
         }
 
         [TestMethod]
@@ -256,7 +288,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestDestroySequenceWithRadiusEffect()
+        public void TestDestroySequenceWithRadius1Effect()
         {
             var w = 6;
             var h = 6;
@@ -270,13 +302,44 @@ namespace Tests
                     gridState[i, j] = grid.Cells[i, j].Element.State;
 
             grid.Cells[1, 1].Element.State = grid.Cells[1, 2].Element.State = grid.Cells[1, 3].Element.State = State.s2;
-            grid.Cells[1, 3].Element.Effect = Effects.radius;
+            grid.Cells[1, 3].Element.Effect = Effects.radius1;
 
             grid.DestroySequence(new[]{grid.Cells[1,1],grid.Cells[1,2],grid.Cells[1,3]});
 
             Assert.AreEqual(gridState[1, 5], grid.Cells[1, 1].Element.State);
             Assert.AreEqual(gridState[0, 5], grid.Cells[0, 2].Element.State);
             Assert.AreEqual(gridState[2, 5], grid.Cells[2, 2].Element.State);
+
+            //убедиться что не передалось эффектов никому
+            foreach (var c in grid.Cells)
+                Assert.AreEqual(Effects.no, c.Element.Effect);
+
+        }
+
+        [TestMethod]
+        public void TestDestroySequenceWithRadius2Effect()
+        {
+            var w = 6;
+            var h = 6;
+
+            var grid = new Grid(w, h);
+
+            //сохранить состояние сетки
+            var gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+
+            grid.Cells[2, 0].Element.State = grid.Cells[2, 1].Element.State = grid.Cells[2, 2].Element.State = State.s2;
+            grid.Cells[2, 2].Element.Effect = Effects.radius2;
+
+            grid.DestroySequence(new[] { grid.Cells[2, 0], grid.Cells[2, 1], grid.Cells[2, 2] });
+
+            Assert.AreEqual(gridState[0, 5], grid.Cells[0, 0].Element.State);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 0].Element.State);
+            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 0].Element.State);
+            Assert.AreEqual(gridState[3, 5], grid.Cells[3, 0].Element.State);
+            Assert.AreEqual(gridState[4, 5], grid.Cells[4, 0].Element.State);
 
             //убедиться что не передалось эффектов никому
             foreach (var c in grid.Cells)

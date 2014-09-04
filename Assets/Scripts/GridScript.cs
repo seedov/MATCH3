@@ -8,7 +8,7 @@ public class GridScript : MonoBehaviour {
     public ElementScript ElementPrefab;
     public Sprite[] Sprites;
     Model.Grid grid;
-    CellScript[,] cells;
+    public CellScript[,] cells;
     CellScript selectedCell;
     Vector3 deltaMousePos;
     Vector3 prevMousePos, initMousePos;
@@ -21,6 +21,11 @@ public class GridScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         grid = new Model.Grid(Width, Height);
+        grid.SequenceDestroyed += (seq) =>
+        {
+            foreach (var c in seq)
+                cells[c.ColIndex, c.RowIndex].Element.Destroy();
+        };
         cells = new CellScript[Width, Height];
         for (var i = 0; i < Width; ++i)
         {
@@ -40,6 +45,7 @@ public class GridScript : MonoBehaviour {
                 cell.Cell = grid.Cells[i, j];
 
                 var e = Instantiate(ElementPrefab) as ElementScript;
+                e.grid = this;
                 //				e.State = (State)rand;
                 //e.Init(Sprites[0]);
                 e.transform.parent = transform;
@@ -47,7 +53,7 @@ public class GridScript : MonoBehaviour {
                 //e.State = State.s1;
              //   elements.Add(e);
                 cell.Element = e;
-            //    e.Element = cell.Cell.Element;
+                e.Element = cell.Cell.Element;
             }
 
         }
@@ -153,7 +159,8 @@ public class GridScript : MonoBehaviour {
 
     IEnumerator WaitAndDestroySequence()
     {
-        var vm = selectedCells.ToArray();
+        
+        var vm = grid.FindSequenceToDestroy(selectedCells.ToArray());
         if (vm != null)
         {
             foreach (var c in vm)
@@ -308,6 +315,7 @@ public class GridScript : MonoBehaviour {
         if (Input.GetMouseButtonUp(0))
         {
             isSelecting = false;
+      //      grid.DestroySequence(selectedCells.ToArray()); 
             StartCoroutine(WaitAndDestroySequence());
             selectedCells.Clear();
             SelectedCells.Clear();

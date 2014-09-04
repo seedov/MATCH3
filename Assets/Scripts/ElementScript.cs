@@ -4,12 +4,15 @@ using System.Linq;
 using System;
 
 public class ElementScript : MonoBehaviour {
+    public GridScript grid;
     public string ElementState;
     public string ElementEffect;
     private SpriteRenderer sprite;
     private Model.Element element = new Model.Element();
     private Sprite[] sprites;
     private TextMesh text;
+    private Vector3 newPosition, startPosition;
+    float startTime, jorneyLength;
 
     public Model.Element Element
     {
@@ -20,21 +23,53 @@ public class ElementScript : MonoBehaviour {
         }
     }
 
+    bool isJustDestroyed;
+
 	// Use this for initialization
 	void Start () {
-	
+        newPosition = transform.position;
+        Element.CellChanged += (c) =>
+        {
+            element = c.Element;
+            var cell = grid.cells[c.ColIndex, c.RowIndex];
+            cell.Element = this;
+            startTime = Time.time;
+            startPosition = transform.position;
+            newPosition = cell.transform.position;
+            jorneyLength = Vector3.Distance(startPosition, newPosition);
+
+            //transform.localPosition = cell.transform.position;
+        };
+
+        Element.Destroyed += () =>
+        {
+            print("destroyed");
+            isJustDestroyed = true;
+            renderer.material.color = new Color(255, 255, 255, 0);
+            StartCoroutine(WaitAndSetVisible());
+        };
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (isJustDestroyed)
+        {
+            transform.position = newPosition;
+            isJustDestroyed = false;
+        }
+        if (transform.position != newPosition)
+        {
+            transform.position = Vector3.Lerp(startPosition, newPosition, (Time.time - startTime));
+        }
         if (Element == null) return;
         ElementState = Element.State.ToString();
         ElementEffect = Element.Effect.ToString();
         switch (Element.Effect)
         {
-            case Model.Effects.radius:
+            case Model.Effects.radius1:
             case Model.Effects.cross:
-            case Model.Effects.all:
+            case Model.Effects.radius2:
                 text.text = Element.Effect.ToString();
                 break;
 
@@ -60,6 +95,18 @@ public class ElementScript : MonoBehaviour {
         sprites = Resources.LoadAll<Sprite>("");
     }
 
+    public void Destroy()
+    {
+  //      gameObject.renderer.material.color = Color.green;
+//        renderer.material.color = Color.green;
+//        StartCoroutine(WaitAndSetVisible());
+    }
+
+    public void Init()
+    {
+        gameObject.renderer.material.color = Color.white;
+    }
+
     public void Init(Sprite sprite)
     {
         this.sprite.sprite = sprite;
@@ -75,7 +122,7 @@ public class ElementScript : MonoBehaviour {
     private IEnumerator WaitAndSetVisible()
     {
 
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(1.5f);
         //        this.sprite.sprite = newSprite;
         //        State = (State)int.Parse(sprite.name);
         transform.localScale = Vector3.one;
