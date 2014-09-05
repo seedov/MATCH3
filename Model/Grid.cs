@@ -302,6 +302,68 @@ namespace Model
             return seq.ToArray();
         }
 
+        private Cell[] GetCellsInCross(Cell c, Cell[] sequence)
+        {
+            var seq = sequence.ToList();
+            var cell = c;
+            while (cell.Up != null)
+            {
+                if (!seq.Contains(cell.Up))
+                    seq.Add(cell.Up);
+                cell = cell.Up;
+            }
+            cell = c;
+            while (cell.Down != null)
+            {
+                if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
+                cell = cell.Down;
+            }
+            cell = c;
+            while (cell.Left != null)
+            {
+                if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
+                cell = cell.Left;
+            }
+            cell = c;
+            while (cell.Right != null)
+            {
+                if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
+                cell = cell.Right;
+            }
+            return seq.ToArray();
+        }
+
+        private Cell[] GetCellsInX(Cell c, Cell[] sequence)
+        {
+            var seq = sequence.ToList();
+            var cell = c;
+            while (cell.Up != null)
+            {
+                if (!seq.Contains(cell.Up))
+                    seq.Add(cell.Up);
+                cell = cell.Up;
+            }
+            cell = c;
+            while (cell.Down != null)
+            {
+                if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
+                cell = cell.Down;
+            }
+            cell = c;
+            while (cell.Left != null)
+            {
+                if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
+                cell = cell.Left;
+            }
+            cell = c;
+            while (cell.Right != null)
+            {
+                if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
+                cell = cell.Right;
+            }
+            return seq.ToArray();
+        }
+
         /// <summary>
         /// Найти последовательность для уничтожения с учетом всех дополнительных эффектов у элементов в исходной последовательность <see cref=" sequence"/>. Доп эффект когда какойто элемент разрушает помимо себя еще какието элементы
         /// </summary>
@@ -326,33 +388,36 @@ namespace Model
                         break;
 
                     case Effects.cross:
-                        var cell = c;
-                        while (cell.Up != null)
-                        {
-                            if (!seq.Contains(cell.Up))
-                                seq.Add(cell.Up);
-                            cell = cell.Up;
-                        }
-                        cell = c;
-                        while (cell.Down != null)
-                        {
-                            if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
-                            cell = cell.Down;
-                        }
-                        cell = c;
-                        while (cell.Left != null)
-                        {
-                            if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
-                            cell = cell.Left;
-                        }
-                        cell = c;
-                        while (cell.Right != null)
-                        {
-                            if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
-                            cell = cell.Right;
-                        }
+                        //var cell = c;
+                        //while (cell.Up != null)
+                        //{
+                        //    if (!seq.Contains(cell.Up))
+                        //        seq.Add(cell.Up);
+                        //    cell = cell.Up;
+                        //}
+                        //cell = c;
+                        //while (cell.Down != null)
+                        //{
+                        //    if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
+                        //    cell = cell.Down;
+                        //}
+                        //cell = c;
+                        //while (cell.Left != null)
+                        //{
+                        //    if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
+                        //    cell = cell.Left;
+                        //}
+                        //cell = c;
+                        //while (cell.Right != null)
+                        //{
+                        //    if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
+                        //    cell = cell.Right;
+                        //}
 
-                        sequence = seq.ToArray();
+                        sequence = GetCellsInCross(c, sequence);// seq.ToArray();
+                        break;
+
+                    case Effects.star:
                         break;
 
                     case Effects.all:
@@ -373,8 +438,6 @@ namespace Model
         {
             sequence = FindSequenceToDestroy(sequence);
             var sequenceList = sequence.ToList();
-
-            
             var vertSequences = FindVerticalMatchInSequence(sequence);
 
             Cell[] notVertSeq= sequence;
@@ -405,9 +468,9 @@ namespace Model
                 sequenceList.Remove(c);
                 cell.Element = destroyableElement;
             }
-
             OnSequenceDestroyed(sequence);
         }
+
 
 
         public event Action<Cell[]> SequenceDestroyed

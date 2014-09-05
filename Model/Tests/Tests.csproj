@@ -45,10 +45,15 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BattleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="M3Tests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Battle\Battle.csproj">
+      <Project>{A1D93567-FA93-48C3-8506-38F4D3887EAB}</Project>
+      <Name>Battle</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Model.csproj">
       <Project>{0AFBA83C-106E-4844-A133-B2A81A41F54B}</Project>
       <Name>Model</Name>

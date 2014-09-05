@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Model;
+using System.Linq;
 
 public class GridScript : MonoBehaviour {
     public int Width, Height;
@@ -15,11 +16,17 @@ public class GridScript : MonoBehaviour {
     bool movingRow, movingCol;
     bool isDown;
 
+    public PlayerScript Player;
+    public MonsterScript Monster;
+
     public Regimes Regime;
 
 
 	// Use this for initialization
 	void Start () {
+        Player.Player.Enemy = Monster.Monster;
+        Monster.Monster.Enemy = Player.Player;
+
         grid = new Model.Grid(Width, Height);
         grid.SequenceDestroyed += (seq) =>
         {
@@ -157,10 +164,20 @@ public class GridScript : MonoBehaviour {
         }
     }
 
+    private int steps;
+
     IEnumerator WaitAndDestroySequence()
     {
         
         var vm = grid.FindSequenceToDestroy(selectedCells.ToArray());
+        Player.Player.CollectElements(vm.Select(cell=>cell.Element).ToArray());
+        Player.Player.AttackEnemy();
+        steps++;
+        if (steps == 3)
+        {
+            steps = 0;
+            Monster.Monster.AttackEnemy();
+        }
         if (vm != null)
         {
             foreach (var c in vm)
