@@ -15,6 +15,12 @@ namespace Battle
             var elementsByState = elements.GroupBy(e => e.State);
             foreach (var grouppedElements in elementsByState)
             {
+                //foreach(var e in grouppedElements){
+                //if (e.State == State.uni)
+                //{
+                //    if(chainState == State.s1)
+                //}
+                //}
                 ApplyDamage(grouppedElements.Count());
             }
         }

@@ -1,9 +1,10 @@
 fileFormatVersion: 2
-guid: 4456b95b004c3e7458fd70567e4900ff
+guid: 6d4a0a179e9e1dc4db9d7a66c9beec26
 TextureImporter:
   fileIDToRecycleName:
-    21300000: evernote
-    21300002: 6
+    21300000: dribbble
+    21300002: 4
+    21300004: 6
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

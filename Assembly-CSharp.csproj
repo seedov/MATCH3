@@ -180,7 +180,9 @@
      <Compile Include="Assets\NGUI\Scripts\UI\UITexture.cs" />
      <Compile Include="Assets\NGUI\Scripts\UI\UITooltip.cs" />
      <Compile Include="Assets\NGUI\Scripts\UI\UIViewport.cs" />
+     <Compile Include="Assets\Scripts\BottomPanelScript.cs" />
      <Compile Include="Assets\Scripts\CellScript.cs" />
+     <Compile Include="Assets\Scripts\CreatureScript.cs" />
      <Compile Include="Assets\Scripts\ElementScript.cs" />
      <Compile Include="Assets\Scripts\GameScript.cs" />
      <Compile Include="Assets\Scripts\GridScript.cs" />
@@ -228,11 +230,11 @@
      <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
      <None Include="Assets\NGUI\Examples\Models\Orc Armor\Orc Armor.shader" />
      <None Include="Assets\NGUI\Examples\Resources\Localization.txt" />
- <Reference Include="Model">
- <HintPath>D:/MATCH3/Assets/Plugins/Model.dll</HintPath>
- </Reference>
  <Reference Include="Battle">
  <HintPath>D:/MATCH3/Assets/Plugins/Battle.dll</HintPath>
+ </Reference>
+ <Reference Include="Model">
+ <HintPath>D:/MATCH3/Assets/Plugins/Model.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

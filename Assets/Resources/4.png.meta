@@ -1,9 +1,10 @@
 fileFormatVersion: 2
-guid: 6d4a0a179e9e1dc4db9d7a66c9beec26
+guid: ae7c6f1ed825dd24f9dbf36b7e639e08
 TextureImporter:
   fileIDToRecycleName:
-    21300000: dribbble
-    21300002: 4
+    21300000: email
+    21300002: 5
+    21300004: 4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

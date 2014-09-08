@@ -302,9 +302,9 @@ namespace Model
             return seq.ToArray();
         }
 
-        private Cell[] GetCellsInCross(Cell c, Cell[] sequence)
+        private Cell[] GetCellsInCross(Cell c)//, Cell[] sequence)
         {
-            var seq = sequence.ToList();
+            var seq = new List<Cell>();// sequence.ToList();
             var cell = c;
             while (cell.Up != null)
             {
@@ -442,36 +442,16 @@ namespace Model
                         break;
 
                     case Effects.cross:
-                        //var cell = c;
-                        //while (cell.Up != null)
-                        //{
-                        //    if (!seq.Contains(cell.Up))
-                        //        seq.Add(cell.Up);
-                        //    cell = cell.Up;
-                        //}
-                        //cell = c;
-                        //while (cell.Down != null)
-                        //{
-                        //    if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
-                        //    cell = cell.Down;
-                        //}
-                        //cell = c;
-                        //while (cell.Left != null)
-                        //{
-                        //    if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
-                        //    cell = cell.Left;
-                        //}
-                        //cell = c;
-                        //while (cell.Right != null)
-                        //{
-                        //    if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
-                        //    cell = cell.Right;
-                        //}
-
-                        sequence = GetCellsInCross(c, sequence);// seq.ToArray();
+                        var cross = GetCellsInCross(c);//, sequence);
+                        sequence = seq.Union(cross).ToArray();
                         break;
 
                     case Effects.star:
+                        var X = GetCellsInX(c);
+                        cross = GetCellsInCross(c);
+                        foreach (var cell in X)
+                            if (!seq.Contains(cell)) seq.Add(cell);
+                        sequence = seq.Union(X).Union(cross).ToArray();
                         break;
 
                     case Effects.all:
@@ -490,12 +470,14 @@ namespace Model
         /// <param name="sequence">Уничтожаемая последовательность</param>
         public void DestroySequence(Cell[] sequence)
         {
-            sequence = FindSequenceToDestroy(sequence);
-            var sequenceList = sequence.ToList();
-            var vertSequences = FindVerticalMatchInSequence(sequence);
+            var seq = FindSequenceToDestroy(sequence);
 
-            Cell[] notVertSeq= sequence;
-            if (sequence.Length < 3) return;
+            //sequence = FindSequenceToDestroy(sequence);
+            var sequenceList = seq.ToList();
+            var vertSequences = FindVerticalMatchInSequence(seq);
+
+            Cell[] notVertSeq= seq;
+            if (seq.Length < 3) return;
 
             foreach (var vertSeq in vertSequences)
             {
@@ -522,7 +504,32 @@ namespace Model
                 sequenceList.Remove(c);
                 cell.Element = destroyableElement;
             }
-            OnSequenceDestroyed(sequence);
+
+            var last = sequence[sequence.Length - 1];
+            switch (sequence.Length)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    last.Element.Effect = Effects.no;
+                    break;
+                case 4:
+                    last.Element.IsUniversal = true;//.Effect = Effects.uni;// State.uni;
+                    break;
+                case 5:
+                    last.Element.Effect = Effects.radius1;
+                    break;
+                case 6:
+                    last.Element.Effect = Effects.cross;
+                    break;
+                case 7:
+                default:
+                    last.Element.Effect = Effects.star;
+                    break;
+            }
+
+            OnSequenceDestroyed(seq);
         }
 
 
@@ -535,25 +542,7 @@ namespace Model
         private Action<Cell[]> sequenceDestroyed;
         public void OnSequenceDestroyed(Cell[] sequence)
         {
-            var last = sequence[sequence.Length - 1];
-            switch (sequence.Length)
-            {
-                case 4:
-                    last.Element.State = State.uni;
-                    break;
-                case 5:
-                    last.Element.Effect = Effects.radius1;
-                    break;
-                case 6:
-                    last.Element.Effect = Effects.cross;
-                    break;
-                case 7:
-                    last.Element.Effect = Effects.radius2;
-                    break;
-                default:
-                    last.Element.Effect = Effects.no;
-                    break;
-            }
+
 
             var h = sequenceDestroyed;
             if (h != null) h(sequence);

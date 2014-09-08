@@ -70,6 +70,7 @@ public class ElementScript : MonoBehaviour {
             case Model.Effects.radius1:
             case Model.Effects.cross:
             case Model.Effects.radius2:
+            case Model.Effects.star:
                 text.text = Element.Effect.ToString();
                 break;
 
@@ -78,7 +79,7 @@ public class ElementScript : MonoBehaviour {
                 text.text = "";
                 break;
         }
-        if (Element.State == Model.State.uni)
+        if (Element.IsUniversal)
         {
             sprite.sprite = Array.Find(sprites, s => s.name == "skype");
         }

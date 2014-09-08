@@ -1,9 +1,11 @@
 fileFormatVersion: 2
-guid: ae7c6f1ed825dd24f9dbf36b7e639e08
+guid: a945c975806c2a545a311a2b20615760
 TextureImporter:
   fileIDToRecycleName:
-    21300000: email
-    21300002: 5
+    21300000: deviantart
+    21300002: 2
+    21300004: 7
+    21300006: 5
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

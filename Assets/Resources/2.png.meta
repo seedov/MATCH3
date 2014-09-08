@@ -1,9 +1,10 @@
 fileFormatVersion: 2
-guid: a945c975806c2a545a311a2b20615760
+guid: b1dcb98c158c2034bbed2fec6df34788
 TextureImporter:
   fileIDToRecycleName:
-    21300000: deviantart
-    21300002: 2
+    21300000: digg
+    21300002: 3
+    21300004: 2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

@@ -4,29 +4,27 @@ using Battle;
 using Model;
 
 
-public class MonsterScript : MonoBehaviour {
-    public float Health;
-    private UISlider HealthBar;
+public class MonsterScript : CreatureScript {
 
     public PlayerScript Enemy;
     public Monster Monster = new Monster();
-	// Use this for initialization
-    void Awake()
+
+
+
+    protected override void Start()
     {
-        HealthBar = GetComponentInChildren<UISlider>();
-    }
-	void Start () {
         Monster.Died += () =>
         {
             //HealthBar.gameObject.SetActive(false);
-            SendMessageUpwards("PrintWin");
+            SendMessageUpwards("PrintLoose");
+
         };
-	
-	}
-	
+        base.Start();
+
+    }
 	// Update is called once per frame
-	void Update () {
+	protected override void Update () {
         Health = Monster.Health;
-        HealthBar.value = Health / 100;
+        base.Update();
 	}
 }

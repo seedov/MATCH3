@@ -317,7 +317,7 @@ public class GridScript : MonoBehaviour {
                 if (cell != null)
                 {
                     //					cell.Element.renderer.material.color = Color.green;
-                    if (!selectedCells.Contains(cell.Cell) && (cell.Cell.Element.State == seqElementsState || cell.Cell.Element.State == Model.State.uni))
+                    if (!selectedCells.Contains(cell.Cell) && (cell.Cell.Element.State == seqElementsState || cell.Cell.Element.IsUniversal))
                     {
                         var lastAddedCell = selectedCells[selectedCells.Count - 1];
                         if (Mathf.Abs(cell.ColIndex - lastAddedCell.ColIndex) < 2 && Mathf.Abs(cell.RowIndex - lastAddedCell.RowIndex) < 2)

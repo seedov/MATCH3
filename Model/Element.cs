@@ -7,6 +7,8 @@ namespace Model
 {
     public class Element
     {
+        public bool IsUniversal;
+
         private static Random rnd= new Random();
         private static int amountOfStates=6;
 
@@ -25,6 +27,7 @@ namespace Model
             OnDestroyed();
             State = (State)GetNextRandomState();
             Effect = Effects.no;
+            IsUniversal = false;
         }
         private static int GetNextRandomState()
         {
@@ -61,7 +64,14 @@ namespace Model
 
     public enum State
     {
-        empty=0, s1 = 1, s2, s3, s4, s5, s6, uni
+        empty=0, 
+        s1 = 1,//огонь
+        s2,//вода
+        s3,//природа
+        s4,//свет
+        s5,//тьма
+ //       s6, 
+ //       uni
     }
 
     public enum Effects

@@ -1,9 +1,10 @@
 fileFormatVersion: 2
-guid: b1dcb98c158c2034bbed2fec6df34788
+guid: 4456b95b004c3e7458fd70567e4900ff
 TextureImporter:
   fileIDToRecycleName:
-    21300000: digg
-    21300002: 3
+    21300000: evernote
+    21300002: 6
+    21300004: 3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

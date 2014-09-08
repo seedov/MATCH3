@@ -492,5 +492,33 @@ namespace Tests
             //cells = grid.GetCellsInX(grid.Cells[3, 1]);
         }
 
+        [TestMethod]
+        public void TestDestroySequenceWithStarEffect()
+        {
+            var w = 7;
+            var h = 7;
+
+            var grid = new Grid(w, h);
+
+            grid.Cells[1, 2].Element.State = grid.Cells[2, 2].Element.State = grid.Cells[3, 2].Element.State = State.s2;
+            grid.Cells[3, 2].Element.Effect = Effects.star;
+
+            //сохранить состояние сетки
+            var gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+
+            grid.DestroySequence(new[] { grid.Cells[1, 2], grid.Cells[2, 2], grid.Cells[3, 2] });
+
+            Assert.AreEqual(gridState[0, 0], grid.Cells[0, 0].Element.State);
+            Assert.AreEqual(gridState[1, 0], grid.Cells[1, 1].Element.State);
+            Assert.AreEqual(gridState[2, 0], grid.Cells[2, 0].Element.State);
+            //Assert.AreEqual(gridState[0, 3], grid.Cells[0, 0].Element.State);
+            Assert.AreEqual(gridState[4, 0], grid.Cells[4, 0].Element.State);
+            Assert.AreEqual(gridState[5, 0], grid.Cells[5, 1].Element.State);
+            Assert.AreEqual(gridState[6, 0], grid.Cells[6, 0].Element.State);
+
+        }
     }
 }
