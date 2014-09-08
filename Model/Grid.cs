@@ -333,34 +333,88 @@ namespace Model
             return seq.ToArray();
         }
 
-        private Cell[] GetCellsInX(Cell c, Cell[] sequence)
+        public Cell[] GetCellsInX(Cell c)
         {
-            var seq = sequence.ToList();
-            var cell = c;
-            while (cell.Up != null)
+            var seq = new List<Cell>();
+
+            //найти самую дальнюю точку левого нижнего луча
+            int x0=0, y0=0, x1=Width-1, y1 = Height-1;
+            if (c.ColIndex > c.RowIndex)
             {
-                if (!seq.Contains(cell.Up))
-                    seq.Add(cell.Up);
-                cell = cell.Up;
+                x0 = c.ColIndex - c.RowIndex;
+                y0 = 0;
             }
-            cell = c;
-            while (cell.Down != null)
+            else if(c.RowIndex > c.ColIndex)
             {
-                if (!seq.Contains(cell.Down)) seq.Add(cell.Down);
-                cell = cell.Down;
+                y0 = c.RowIndex - c.ColIndex;
+                x0 = 0;
             }
-            cell = c;
-            while (cell.Left != null)
+            else
             {
-                if (!seq.Contains(cell.Left)) seq.Add(cell.Left);
-                cell = cell.Left;
+                x0 = 0;
+                y0 = 0;
             }
-            cell = c;
-            while (cell.Right != null)
+
+            for (var i = 0; i < Math.Min(c.ColIndex, c.RowIndex); ++i)
+                seq.Add(Cells[x0 + i, y0 + i]);
+
+            //найти самую дальнюю точку левого верхнего луча
+            if (c.ColIndex > Height - 1 - c.RowIndex)
             {
-                if (!seq.Contains(cell.Right)) seq.Add(cell.Right);
-                cell = cell.Right;
+                x0 = c.ColIndex - (Height - 1 - c.RowIndex);
+                y0 = Height-1;
             }
+            else if (c.ColIndex < Height - 1 - c.RowIndex)
+            {
+                y0 = (c.ColIndex + c.RowIndex);
+                x0 = 0;
+            }
+            else
+            {
+                x0 = 0;
+                y0 = Height - 1;
+            }
+            for (var i = 0; i < Math.Min(c.ColIndex, Height-1-c.RowIndex); ++i)
+                seq.Add(Cells[x0 + i, y0 - i]);
+
+            //найти самую дальнюю точку правого верхнего луча
+            if (Width - 1 - c.ColIndex > Height - 1 - c.RowIndex)
+            {
+                x0 = c.ColIndex + (Height-1- c.RowIndex);
+                y0 = Height - 1;
+            }
+            else if (Width - 1 - c.ColIndex < Height - 1 - c.RowIndex)
+            {
+                x0 = Width - 1;
+                y0 = c.RowIndex + ((Width-1) - c.ColIndex);
+            }
+            else
+            {
+                x0 = Width - 1;
+                y0 = Height - 1;
+            }
+            for (var i = 0; i < Math.Min(Width -1 -c.ColIndex, Height - 1 - c.RowIndex); ++i)
+                seq.Add(Cells[x0 - i, y0 - i]);
+
+            //найтить самую дальнюю точку правого нижнего луча
+            if (Width - 1 - c.ColIndex > c.RowIndex)
+            {
+                x0 = c.ColIndex + c.RowIndex;
+                y0 = 0;
+            }
+            else if (Width - 1 - c.ColIndex < c.RowIndex)
+            {
+                x0 = Width - 1;
+                y0 = Width -1 - c.ColIndex;
+            }
+            else
+            {
+                x0 = Width - 1;
+                y0 = 0;
+            }
+            for (var i = 0; i < Math.Min(Width - 1 - c.ColIndex, c.RowIndex); ++i)
+                seq.Add(Cells[x0 - i, y0 + i]);
+
             return seq.ToArray();
         }
 

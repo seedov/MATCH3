@@ -381,5 +381,116 @@ namespace Tests
 
         }
 
+        [TestMethod]
+        public void TestGetCellsInX()
+        {
+            var w = 6;
+            var h = 6;
+
+            var grid = new Grid(w, h);
+
+            var cells = grid.GetCellsInX(grid.Cells[3, 1]);
+            Assert.AreEqual(7, cells.Length);
+            Assert.AreEqual(grid.Cells[2, 0], cells[0]);
+
+            Assert.AreEqual(grid.Cells[2, 2], cells[3]);
+            Assert.AreEqual(grid.Cells[1, 3], cells[2]);
+            Assert.AreEqual(grid.Cells[0, 4], cells[1]);
+
+            Assert.AreEqual(grid.Cells[5, 3], cells[4]);
+            Assert.AreEqual(grid.Cells[4, 2], cells[5]);
+
+            Assert.AreEqual(grid.Cells[4, 0], cells[6]);
+
+            //от другой точки
+            cells = grid.GetCellsInX(grid.Cells[2, 1]);
+            Assert.AreEqual(7, cells.Length);
+            Assert.AreEqual(grid.Cells[1, 0], cells[0]);
+
+            Assert.AreEqual(grid.Cells[0, 3], cells[1]);
+            Assert.AreEqual(grid.Cells[1, 2], cells[2]);
+
+            Assert.AreEqual(grid.Cells[5, 4], cells[3]);
+            Assert.AreEqual(grid.Cells[4, 3], cells[4]);
+            Assert.AreEqual(grid.Cells[3, 2], cells[5]);
+
+            Assert.AreEqual(grid.Cells[3, 0], cells[6]);
+
+            //от другой точки
+            cells = grid.GetCellsInX(grid.Cells[2, 3]);
+            Assert.AreEqual(9, cells.Length);
+            Assert.AreEqual(grid.Cells[0, 1], cells[0]);
+            Assert.AreEqual(grid.Cells[1, 2], cells[1]);
+            Assert.AreEqual(grid.Cells[0, 5], cells[2]);
+            Assert.AreEqual(grid.Cells[1, 4], cells[3]);
+            Assert.AreEqual(grid.Cells[4, 5], cells[4]);
+            Assert.AreEqual(grid.Cells[3, 4], cells[5]);
+            Assert.AreEqual(grid.Cells[5, 0], cells[6]);
+            Assert.AreEqual(grid.Cells[4, 1], cells[7]);
+            Assert.AreEqual(grid.Cells[3, 2], cells[8]);
+
+            //от другой точки
+            cells = grid.GetCellsInX(grid.Cells[3, 4]);
+            Assert.AreEqual(7, cells.Length);
+            Assert.AreEqual(grid.Cells[0, 1], cells[0]);
+            Assert.AreEqual(grid.Cells[1, 2], cells[1]);
+            Assert.AreEqual(grid.Cells[2, 3], cells[2]);
+            Assert.AreEqual(grid.Cells[2, 5], cells[3]);
+            Assert.AreEqual(grid.Cells[4, 5], cells[4]);
+            Assert.AreEqual(grid.Cells[5, 2], cells[5]);
+            Assert.AreEqual(grid.Cells[4, 3], cells[6]);
+
+            //из левого нижнего угла
+            cells = grid.GetCellsInX(grid.Cells[0, 0]);
+            Assert.AreEqual(5, cells.Length);
+            Assert.AreEqual(grid.Cells[5, 5], cells[0]);
+            Assert.AreEqual(grid.Cells[4, 4], cells[1]);
+            Assert.AreEqual(grid.Cells[3, 3], cells[2]);
+            Assert.AreEqual(grid.Cells[2, 2], cells[3]);
+            Assert.AreEqual(grid.Cells[1, 1], cells[4]);
+
+            //из левого верхнего угла
+            cells = grid.GetCellsInX(grid.Cells[0, 5]);
+            Assert.AreEqual(5, cells.Length);
+            Assert.AreEqual(grid.Cells[5, 0], cells[0]);
+            Assert.AreEqual(grid.Cells[4, 1], cells[1]);
+            Assert.AreEqual(grid.Cells[3, 2], cells[2]);
+            Assert.AreEqual(grid.Cells[2, 3], cells[3]);
+            Assert.AreEqual(grid.Cells[1, 4], cells[4]);
+
+            //из правого нижнего угла
+            cells = grid.GetCellsInX(grid.Cells[5, 0]);
+            Assert.AreEqual(5, cells.Length);
+            Assert.AreEqual(grid.Cells[0, 5], cells[0]);
+            Assert.AreEqual(grid.Cells[1, 4], cells[1]);
+            Assert.AreEqual(grid.Cells[2, 3], cells[2]);
+            Assert.AreEqual(grid.Cells[3, 2], cells[3]);
+            Assert.AreEqual(grid.Cells[4, 1], cells[4]);
+
+            //из правого верхнего угла
+            cells = grid.GetCellsInX(grid.Cells[5, 5]);
+            Assert.AreEqual(5, cells.Length);
+            Assert.AreEqual(grid.Cells[0, 0], cells[0]);
+            Assert.AreEqual(grid.Cells[1, 1], cells[1]);
+            Assert.AreEqual(grid.Cells[2, 2], cells[2]);
+            Assert.AreEqual(grid.Cells[3, 3], cells[3]);
+            Assert.AreEqual(grid.Cells[4, 4], cells[4]);
+
+            //пробуем с другой (неквадратной) сеткой
+            grid = new Grid(6, 4);
+            cells = grid.GetCellsInX(grid.Cells[3, 1]);
+
+            Assert.AreEqual(6, cells.Length);
+            Assert.AreEqual(grid.Cells[2, 0], cells[0]);
+            Assert.AreEqual(grid.Cells[1, 3], cells[1]);
+            Assert.AreEqual(grid.Cells[2, 2], cells[2]);
+            Assert.AreEqual(grid.Cells[5, 3], cells[3]);
+            Assert.AreEqual(grid.Cells[4, 2], cells[4]);
+            Assert.AreEqual(grid.Cells[4, 0], cells[5]);
+
+
+            //cells = grid.GetCellsInX(grid.Cells[3, 1]);
+        }
+
     }
 }
