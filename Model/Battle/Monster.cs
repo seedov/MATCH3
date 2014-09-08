@@ -10,7 +10,7 @@ namespace Battle
         private const int minDamage = 5, maxDamage = 30;
         private Random rnd = new Random();
 
-        public void ApplyDamage(Element[] elements)
+        public void ApplyDamage(Element[] elements, float multiplier=1)
         {
             var elementsByState = elements.GroupBy(e => e.State);
             foreach (var grouppedElements in elementsByState)

@@ -8,7 +8,7 @@ namespace Battle
     {
         public Creature Enemy { get; set; }
         public float Health { get; set; }
-        public virtual void ApplyDamage(float Damage)
+        public virtual void ApplyDamage(float Damage, float multiplier=1)
         {
             Health -= Damage;
             if (Health <= 0)

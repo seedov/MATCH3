@@ -10,22 +10,32 @@ namespace Battle
         public Storage Storage = new Storage();
         Element[] collectedElements;
 
-        public override void ApplyDamage(float Damage)
+        public override void ApplyDamage(float Damage, float multiplier=1)
         {
             base.ApplyDamage(Damage);
         }
 
         public override void AttackEnemy()
         {
+            float multiplier = 1;
             foreach (var e in collectedElements)
             {
                 Storage.Add(e);
+                if (e.IsUniversal)
+                {
+                    if (e.State == State.s1)
+                        multiplier *= 1.5f;
+                    else if (e.State == State.s3)
+                    {
+                        Health += 0.1f;
+                    }
 
+                }
             }
 
 
 
-            ((Monster)Enemy).ApplyDamage(collectedElements);
+            ((Monster)Enemy).ApplyDamage(collectedElements, multiplier);
         }
 
         public void CollectElements(Element[] elements)

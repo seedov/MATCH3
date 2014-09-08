@@ -11,7 +11,7 @@ namespace Model
         private Cell[,] cells;
         public Cell[,] Cells { get { return cells; } }
         private List<Element> elements = new List<Element>();
-
+        private Cell[] selectedSequence;//последовательность, выбранная пользователем. Без учета дополнительных эффектов элементов в выбранной последовательности
 
 
         public int Width { get; set; }
@@ -425,6 +425,9 @@ namespace Model
         /// <returns>Последовательность с учетом доп. эффектов</returns>
         public Cell[] FindSequenceToDestroy(Cell[] sequence)
         {
+            //сохранить выделенную пользователем последовательность
+            selectedSequence = sequence;
+
             var seq = sequence.ToList();
 
 
@@ -506,27 +509,19 @@ namespace Model
             }
 
             var last = sequence[sequence.Length - 1];
-            switch (sequence.Length)
+
+            if (selectedSequence != null)
             {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
+                if (selectedSequence.Length == 3)
                     last.Element.Effect = Effects.no;
-                    break;
-                case 4:
+                else if (selectedSequence.Length == 4)
                     last.Element.IsUniversal = true;//.Effect = Effects.uni;// State.uni;
-                    break;
-                case 5:
+                else if (selectedSequence.Length == 5)
                     last.Element.Effect = Effects.radius1;
-                    break;
-                case 6:
+                else if (selectedSequence.Length == 6)
                     last.Element.Effect = Effects.cross;
-                    break;
-                case 7:
-                default:
+                else if (selectedSequence.Length > 6)
                     last.Element.Effect = Effects.star;
-                    break;
             }
 
             OnSequenceDestroyed(seq);

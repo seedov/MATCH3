@@ -301,10 +301,13 @@ namespace Tests
                 for (var j = 0; j < h; ++j)
                     gridState[i, j] = grid.Cells[i, j].Element.State;
 
-            grid.Cells[1, 1].Element.State = grid.Cells[1, 2].Element.State = grid.Cells[1, 3].Element.State = State.s2;
+            var seq = new[] { grid.Cells[1, 1], grid.Cells[1, 2], grid.Cells[1, 3], grid.Cells[1,4] };
+            foreach (var c in seq)
+                c.Element.State = State.s2;
+
             grid.Cells[1, 3].Element.Effect = Effects.radius1;
 
-            grid.DestroySequence(new[]{grid.Cells[1,1],grid.Cells[1,2],grid.Cells[1,3]});
+            grid.DestroySequence(seq);
 
             Assert.AreEqual(gridState[1, 5], grid.Cells[1, 1].Element.State);
             Assert.AreEqual(gridState[0, 5], grid.Cells[0, 2].Element.State);

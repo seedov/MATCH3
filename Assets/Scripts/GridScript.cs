@@ -168,8 +168,8 @@ public class GridScript : MonoBehaviour {
 
     IEnumerator WaitAndDestroySequence()
     {
-        
-        var vm = grid.FindSequenceToDestroy(selectedCells.ToArray());
+		var seqToDestroy = grid.FindSequenceToDestroy(selectedCells.ToArray());
+		var vm = selectedCells.ToArray();
         Player.Player.CollectElements(vm.Select(cell=>cell.Element).ToArray());
         Player.Player.AttackEnemy();
         steps++;
@@ -180,12 +180,12 @@ public class GridScript : MonoBehaviour {
         }
         if (vm != null)
         {
-            foreach (var c in vm)
+            foreach (var c in seqToDestroy)
             {
                 cells[c.ColIndex, c.RowIndex].DestroyElement();
             }
             yield return new WaitForSeconds(1);
-            foreach (var c in vm)
+            foreach (var c in seqToDestroy)
                 cells[c.ColIndex, c.RowIndex].InitElement();
 
             grid.DestroySequence(vm);
@@ -331,6 +331,12 @@ public class GridScript : MonoBehaviour {
         }
         if (Input.GetMouseButtonUp(0))
         {
+			if(selectedCells.Count<3){
+				selectedCells.Clear();
+            	SelectedCells.Clear();
+				isSelecting = false;
+				return;
+			}
             isSelecting = false;
       //      grid.DestroySequence(selectedCells.ToArray()); 
             StartCoroutine(WaitAndDestroySequence());
