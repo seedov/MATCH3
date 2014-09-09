@@ -7,15 +7,23 @@ public class GameScript : MonoBehaviour {
     private MonsterScript monster;
 
     private UILabel label;
-    bool gameover;
+	VictoryDefeatWindowScript victoryDefeatWnd;
     void Awake()
     {
-        label = GetComponentInChildren<UILabel>();
+		victoryDefeatWnd = GetComponentInChildren<VictoryDefeatWindowScript> ();
+		label = GetComponentInChildren<UILabel>();
         player = GetComponentInChildren<PlayerScript>();
         monster = GetComponentInChildren<MonsterScript>();
     }
 	void Start () {
-        NewGame();
+
+	}
+
+	public void OnMonsterDied(){
+		victoryDefeatWnd.Show (true);
+	}
+	public void OnPlayerDied(){
+		victoryDefeatWnd.Show (false);
 	}
 	
 	// Update is called once per frame
@@ -40,11 +48,6 @@ public class GameScript : MonoBehaviour {
         darkness.GetComponentInParent<UIButton>().isEnabled = d > 9;
         darkness.text = d.ToString();
 
-        if (gameover)
-        {
-            if (Input.GetMouseButton(0))
-                NewGame();
-        }
 	}
 
     private void Attack(Model.State state)
@@ -63,7 +66,6 @@ public class GameScript : MonoBehaviour {
     public void AttackWithFire()
     {
         Attack(Model.State.s1);
-        player.Player.Storage.FireCnt -= 20;
     }
 
     public void AttackWithWater()
@@ -86,18 +88,11 @@ public class GameScript : MonoBehaviour {
 
     public void NewGame()
     {
-        gameover = false;
-        label.text = "";
+		player.Player.Health = 100;
+		monster.Monster.Health = 100;
+		player.Start();
+		monster.Start ();
     }
-    public void PrintLoose()
-    {
-        gameover = true;
-        label.text = "Defeat";
-    }
-    public void PrintWin()
-    {
-        gameover = true;
-        label.text = "Win";
-    }
+
 
 }

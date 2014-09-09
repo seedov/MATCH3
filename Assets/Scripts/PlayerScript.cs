@@ -8,18 +8,19 @@ public class PlayerScript : CreatureScript {
     public Player Player = new Player();
 
 
-    protected override void Start()
+    public override void Start()
     {
-        Player.Died += () =>
-        {
-            //HealthBar.gameObject.SetActive(false);
-            SendMessageUpwards("PrintLoose");
-
-        };
+		Player.Died += PlayerDied;
         base.Start();
         
 	}
-	
+
+	private void PlayerDied(){
+		Player.Died -= PlayerDied;
+		SendMessageUpwards ("OnPlayerDied");
+
+	}
+
 	// Update is called once per frame
     
 	protected override void Update () {

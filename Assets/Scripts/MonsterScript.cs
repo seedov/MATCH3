@@ -11,17 +11,18 @@ public class MonsterScript : CreatureScript {
 
 
 
-    protected override void Start()
+    public override void Start()
     {
-        Monster.Died += () =>
-        {
-            //HealthBar.gameObject.SetActive(false);
-            SendMessageUpwards("PrintLoose");
-
-        };
+		Monster.Died += MonsterDied;
         base.Start();
 
     }
+
+	private void MonsterDied(){
+		Monster.Died -= MonsterDied;
+		print ("monster died");
+		SendMessageUpwards ("OnMonsterDied");
+	}
 	// Update is called once per frame
 	protected override void Update () {
         Health = Monster.Health;

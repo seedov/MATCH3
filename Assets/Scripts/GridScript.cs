@@ -16,11 +16,17 @@ public class GridScript : MonoBehaviour {
     bool movingRow, movingCol;
     bool isDown;
 
+
+
     public PlayerScript Player;
     public MonsterScript Monster;
 
     public Regimes Regime;
 
+	void Awake(){
+
+
+	}
 
 	// Use this for initialization
 	void Start () {

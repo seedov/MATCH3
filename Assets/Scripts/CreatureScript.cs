@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class CreatureScript : MonoBehaviour {
@@ -11,11 +12,14 @@ public class CreatureScript : MonoBehaviour {
     protected float lastHelath;
 
     public UILabel hpLabel, deltaHpLabel;
+	UITextList log;
+	Queue<string> logQueue = new Queue<string>();
 
     private TweenAlpha tween;
 
     void Awake()
     {
+		log = GetComponentInChildren<UITextList> ();
         deltaHpLabel = GetComponentInChildren<UILabel>();
         deltaHpLabel.text = "";
         tween = deltaHpLabel.GetComponent<TweenAlpha>();
@@ -23,14 +27,18 @@ public class CreatureScript : MonoBehaviour {
     }
 
 	// Use this for initialization
-	protected virtual void Start () {
+	public virtual void Start () {
         lastHelath = Health;
+		log.Clear ();
 	}
     protected virtual void Update()
     {
         if (Health != lastHelath)
         {
-            deltaHpLabel.text = lastHelath == 0 ? "" : "" + (Health - lastHelath);
+			log.Add(Health.ToString());
+			var deltaHP=Health - lastHelath;
+            deltaHpLabel.text = lastHelath == 0 ? "" : "" + deltaHP;
+			deltaHpLabel.color = deltaHP>0?Color.green:Color.red;
             hpLabel.text = Health.ToString();
             HealthBar.value = Health / 100;
             lastHelath = Health;
