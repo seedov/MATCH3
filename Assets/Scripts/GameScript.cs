@@ -50,14 +50,14 @@ public class GameScript : MonoBehaviour {
     private void Attack(Model.State state)
     {
         print("attack with " + state);
-        var fireElements = new Model.Element[10];
-        for (var i = 0; i < fireElements.Length; ++i)
+        var elements = new Model.Element[10];
+        for (var i = 0; i < elements.Length; ++i)
         {
-            fireElements[i] = new Model.Element() { State = state };
+            elements[i] = new Model.Element() { State = state };
 //            player.Player.Storage.Remove(fireElements[i]);
         }
-        player.Player.CollectElements(fireElements);
-        player.Player.AttackEnemy();
+        player.Player.CollectElements(elements);
+        player.Player.AttackMonsterWithSpecialElement();//.AttackEnemy();
     }
 
     public void AttackWithFire()

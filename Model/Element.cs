@@ -8,6 +8,7 @@ namespace Model
     public class Element
     {
         public bool IsUniversal;
+        public float DamageMultiplier=1;
 
         private static Random rnd= new Random();
         private static int amountOfStates=6;

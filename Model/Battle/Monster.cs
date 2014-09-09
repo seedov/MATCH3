@@ -10,19 +10,23 @@ namespace Battle
         private const int minDamage = 5, maxDamage = 30;
         private Random rnd = new Random();
 
-        public void ApplyDamage(Element[] elements, float multiplier=1)
+        public float ApplyDamage(Element[] elements, float multiplier=1)
         {
+            var damageApplied = 0f;
             var elementsByState = elements.GroupBy(e => e.State);
             foreach (var grouppedElements in elementsByState)
             {
-                //foreach(var e in grouppedElements){
+                foreach(var e in grouppedElements){
+                    ApplyDamage(e.DamageMultiplier);
+                    damageApplied += e.DamageMultiplier;
                 //if (e.State == State.uni)
                 //{
                 //    if(chainState == State.s1)
                 //}
-                //}
-                ApplyDamage(grouppedElements.Count());
+                }
+                //ApplyDamage(grouppedElements.Count()*multiplier);
             }
+            return damageApplied;
         }
 
 
@@ -31,7 +35,7 @@ namespace Battle
             Enemy.ApplyDamage(rnd.Next(minDamage, maxDamage));
         }
 
-
+        
 
     }
 }

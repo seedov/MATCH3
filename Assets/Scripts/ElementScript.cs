@@ -126,7 +126,7 @@ public class ElementScript : MonoBehaviour {
         yield return new WaitForSeconds(1.5f);
         //        this.sprite.sprite = newSprite;
         //        State = (State)int.Parse(sprite.name);
-        transform.localScale = Vector3.one;
+        transform.localScale = Vector3.one*1.5f;
         renderer.material.color = Color.white;
     }
 }

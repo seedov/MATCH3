@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Battle\Battle.csproj">
-      <Project>{A1D93567-FA93-48C3-8506-38F4D3887EAB}</Project>
+      <Project>{C2287AB6-81F2-4CEC-B556-4A73C64D1AA9}</Project>
       <Name>Battle</Name>
     </ProjectReference>
     <ProjectReference Include="..\Model.csproj">

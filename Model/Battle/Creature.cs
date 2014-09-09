@@ -36,6 +36,6 @@ namespace Battle
             if (h != null) died();
         }
         #endregion
-
+        
     }
 }

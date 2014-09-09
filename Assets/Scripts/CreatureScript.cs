@@ -6,19 +6,19 @@ public class CreatureScript : MonoBehaviour {
     [NonSerialized]
     public float Health;
     [NonSerialized]
-    UILabel label;
-    [NonSerialized]
     private UISlider HealthBar;
     [NonSerialized]
     protected float lastHelath;
+
+    public UILabel hpLabel, deltaHpLabel;
 
     private TweenAlpha tween;
 
     void Awake()
     {
-        label = GetComponentInChildren<UILabel>();
-        label.text = "";
-        tween = label.GetComponent<TweenAlpha>();
+        deltaHpLabel = GetComponentInChildren<UILabel>();
+        deltaHpLabel.text = "";
+        tween = deltaHpLabel.GetComponent<TweenAlpha>();
         HealthBar = GetComponentInChildren<UISlider>();
     }
 
@@ -30,7 +30,8 @@ public class CreatureScript : MonoBehaviour {
     {
         if (Health != lastHelath)
         {
-            label.text = lastHelath==0?"": "-" + (lastHelath - Health);
+            deltaHpLabel.text = lastHelath == 0 ? "" : "" + (Health - lastHelath);
+            hpLabel.text = Health.ToString();
             HealthBar.value = Health / 100;
             lastHelath = Health;
 //            tween.gameObject.SetActive(true);
