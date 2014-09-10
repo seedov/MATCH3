@@ -175,7 +175,7 @@ public class GridScript : MonoBehaviour {
     IEnumerator WaitAndDestroySequence()
     {
 		var seqToDestroy = grid.FindSequenceToDestroy(selectedCells.ToArray());
-		var vm = selectedCells.ToArray();
+        var vm =  selectedCells.ToArray();
         Player.Player.CollectElements(vm.Select(cell=>cell.Element).ToArray());
         Player.Player.AttackEnemy();
         steps++;

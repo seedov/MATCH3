@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class GameScript : MonoBehaviour {
-    public UILabel fire, water, nature, light, darkness;
+    public UILabel fire, water, nature, light, darkness, turns;
     private PlayerScript player;
     private MonsterScript monster;
 
@@ -48,6 +48,7 @@ public class GameScript : MonoBehaviour {
         darkness.GetComponentInParent<UIButton>().isEnabled = d > 9;
         darkness.text = d.ToString();
 
+        turns.text = "Your Turns\n"+ player.Player.TurnsToEnemyAttack.ToString();
 	}
 
     private void Attack(Model.State state)
@@ -88,7 +89,9 @@ public class GameScript : MonoBehaviour {
 
     public void NewGame()
     {
+        
 		player.Player.Health = 100;
+        player.Player.Storage.Clear();
 		monster.Monster.Health = 100;
 		player.Start();
 		monster.Start ();

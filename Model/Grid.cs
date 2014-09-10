@@ -13,12 +13,14 @@ namespace Model
         private List<Element> elements = new List<Element>();
         private Cell[] selectedSequence;//последовательность, выбранная пользователем. Без учета дополнительных эффектов элементов в выбранной последовательности
 
+        private static Grid Instance;
 
         public int Width { get; set; }
         public int Height { get; set; }
 
         public Grid(int width, int height)
         {
+            Instance = this;
             Width = width;
             Height = height;
 
@@ -204,6 +206,7 @@ namespace Model
         /// <param name="sequence">Последовательность ячеек для освобождения</param>
         public void DestroyVerticalSequence(Cell[] sequence)
         {
+            if (sequence.Length == 0) return;
             sequence = sequence.OrderBy(c => c.RowIndex).ToArray();
             var destroyableElements = new List<Element>();
             foreach (var c in sequence)
@@ -418,6 +421,17 @@ namespace Model
             return seq.ToArray();
         }
 
+        public static Cell[] GetElementsToDestroy(Element[] sequence)
+        {
+            var seq = new List<Cell>();
+            foreach (var c in Instance.cells)
+            {
+                if (sequence.Contains(c.Element))
+                    seq.Add(c);
+            }
+            return Instance.FindSequenceToDestroy(seq.ToArray());
+        }
+
         /// <summary>
         /// Найти последовательность для уничтожения с учетом всех дополнительных эффектов у элементов в исходной последовательность <see cref=" sequence"/>. Доп эффект когда какойто элемент разрушает помимо себя еще какието элементы
         /// </summary>
@@ -467,15 +481,18 @@ namespace Model
             return sequence;
         }
 
+
         /// <summary>
         /// Уничтожить произвольную последовательность и провалить все элементы, которые находились над уничтоженными
         /// </summary>
         /// <param name="sequence">Уничтожаемая последовательность</param>
         public void DestroySequence(Cell[] sequence)
         {
+            var lastSelected = sequence.Length>3? sequence[sequence.Length - 1]:null;
+            var lastSelectedElement = lastSelected==null?null: lastSelected.Element;
+
             var seq = FindSequenceToDestroy(sequence);
 
-            //sequence = FindSequenceToDestroy(sequence);
             var sequenceList = seq.ToList();
             var vertSequences = FindVerticalMatchInSequence(seq);
 
@@ -486,42 +503,52 @@ namespace Model
             {
                 if (vertSeq != null)
                 {
-                    DestroyVerticalSequence(vertSeq.ToArray());
+                    DestroyVerticalSequence(vertSeq.Except(new[] { lastSelected }).ToArray());//не удаляем последний выделенных элемент
                     notVertSeq = notVertSeq.Except(vertSeq).ToArray();
+                    if (vertSeq.Contains(lastSelected))
+                    {
+                        lastSelected = vertSeq[0];
+         //               vertSeq[0].Element = lastSelectedElement;
+                    }
                 }
             }
 
-            notVertSeq = notVertSeq.OrderByDescending(c => c.RowIndex).ToArray();
+            notVertSeq = notVertSeq.OrderByDescending(c => c.RowIndex).ToArray();//не удаляем последний выделенных элемент
 
-            foreach (var c in  notVertSeq)
+            foreach (var c in  notVertSeq)//.Except(new[] { lastSelected }))
             {
                 var destroyableElement = c.Element;
 
                 var cell = c;
-                while (cell.Up != null && !sequenceList.Contains(cell.Up))
+                if (cell != lastSelected)
                 {
-                    cell.Element = cell.Up.Element;
-                    cell = cell.Up;
+                    while (cell.Up != null && !sequenceList.Contains(cell.Up))
+                    {
+                        cell.Element = cell.Up.Element;
+                        cell = cell.Up;
+                    }
+
+                    destroyableElement.Init();
+                    cell.Element = destroyableElement;
                 }
-                destroyableElement.Init();
+
                 sequenceList.Remove(c);
-                cell.Element = destroyableElement;
+
             }
 
-            var last = sequence[sequence.Length - 1];
 
-            if (selectedSequence != null)
+            if (selectedSequence != null && lastSelected!=null)
             {
                 if (selectedSequence.Length == 3)
-                    last.Element.Effect = Effects.no;
+                    lastSelected.Element.Effect = Effects.no;
                 else if (selectedSequence.Length == 4)
-                    last.Element.IsUniversal = true;//.Effect = Effects.uni;// State.uni;
+                    lastSelected.Element.IsUniversal = true;//.Effect = Effects.uni;// State.uni;
                 else if (selectedSequence.Length == 5)
-                    last.Element.Effect = Effects.radius1;
+                    lastSelected.Element.Effect = Effects.radius1;
                 else if (selectedSequence.Length == 6)
-                    last.Element.Effect = Effects.cross;
+                    lastSelected.Element.Effect = Effects.cross;
                 else if (selectedSequence.Length > 6)
-                    last.Element.Effect = Effects.star;
+                    lastSelected.Element.Effect = Effects.star;
             }
 
             OnSequenceDestroyed(seq);

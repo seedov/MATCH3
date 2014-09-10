@@ -1,8 +1,9 @@
 fileFormatVersion: 2
-guid: 48b174124d90e24458165dac69e95abc
+guid: cdf009c6c2e320c44afc3ee92740e33c
 TextureImporter:
   fileIDToRecycleName:
-    21300000: skype
+    21300000: icon_universal
+    21300002: skype
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -18,11 +19,11 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: .25
     normalMapFilter: 0
-  isReadable: 1
+  isReadable: 0
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: -1
   maxTextureSize: 1024
   textureSettings:
     filterMode: -1
@@ -39,10 +40,10 @@ TextureImporter:
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 0
+  alphaIsTransparency: 1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: 1
+  spritePackingTag: 
   userData: 

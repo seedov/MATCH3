@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: 802b91c5f232f554fab5d234860272f9
+guid: dafea751bc2593c41abb18e4de813a06
 TextureImporter:
   fileIDToRecycleName:
-    21300000: bloggr
+    21300000: icon_fire
     21300002: 1
   serializedVersion: 2
   mipmaps:
@@ -19,7 +19,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: .25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
@@ -40,10 +40,10 @@ TextureImporter:
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: 1
+  spritePackingTag: 
   userData: 

@@ -10,10 +10,16 @@ namespace Battle
         public Storage Storage = new Storage();
         Element[] collectedElements;
 
+        /// <summary>
+        /// Оставшееся оличество ходов перед ходом противника
+        /// </summary>
+        public int TurnsToEnemyAttack=3;
+
         float absorbMultiplier=1;
 
         public override void ApplyDamage(float Damage, float multiplier=1)
         {
+            TurnsToEnemyAttack = 3;
             base.ApplyDamage(Damage*absorbMultiplier);
             absorbMultiplier = 1;
         }
@@ -31,6 +37,7 @@ namespace Battle
 
         public override void AttackEnemy()
         {
+            TurnsToEnemyAttack--;
             var uniElements = collectedElements.Where(e => e.IsUniversal);
 
             var uniFireElements = uniElements.Where(e => e.State == State.s1);
@@ -86,10 +93,18 @@ namespace Battle
             foreach (var e in collectedElements)
             {
                 e.DamageMultiplier = damageMultiplier;
-                Storage.Add(e, energyMultiplier);
+//                Storage.Add(e, energyMultiplier);
             }
 
-            var damageApplied = ((Monster)Enemy).ApplyDamage(collectedElements);
+            var seq = Grid.GetElementsToDestroy(collectedElements);
+            var elements = seq.Select(c => c.Element).ToArray();
+            foreach (var e in elements)
+            {
+//                e.DamageMultiplier = damageMultiplier;
+                Storage.Add(e, energyMultiplier);
+            }
+            Health += elements.Where(e => e.State == State.s3).Count();
+            var damageApplied = ((Monster)Enemy).ApplyDamage(elements.Where(e=>e.State!=State.s3).ToArray());
             Health += damageApplied * healMultiplier;
             Health += damageApplied * vampMultiplier;
             ((Monster)Enemy).ApplyDamage(damageApplied*vampMultiplier);
@@ -104,6 +119,10 @@ namespace Battle
 
     public class Storage
     {
+        public void Clear()
+        {
+            FireCnt = WaterCnt = NatureCnt = LightCnt = DarknessCnt = 0;
+        }
         public void Add(Element e, float multiplier=1)
         {
             switch (e.State)

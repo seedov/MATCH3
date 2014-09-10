@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: a945c975806c2a545a311a2b20615760
+guid: 2119c5eab1b0b1f45863cef9a4c67cc3
 TextureImporter:
   fileIDToRecycleName:
-    21300000: deviantart
-    21300002: 2
-    21300004: 7
-    21300006: 5
+    21300000: icon_poision
+    21300002: 5
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -21,7 +19,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: .25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
@@ -42,10 +40,10 @@ TextureImporter:
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: 1
+  spritePackingTag: 
   userData: 

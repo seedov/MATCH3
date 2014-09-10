@@ -14,6 +14,10 @@ public class ElementScript : MonoBehaviour {
     private Vector3 newPosition, startPosition;
     float startTime, jorneyLength;
 
+    private TweenScale tweenScale;
+
+    public Texture2D SourceTexture;
+
     public Model.Element Element
     {
         get { return element; }
@@ -72,11 +76,15 @@ public class ElementScript : MonoBehaviour {
             case Model.Effects.radius2:
             case Model.Effects.star:
                 text.text = Element.Effect.ToString();
+                tweenScale.PlayForward();
+//                sprite.color = Color.red;
                 break;
 
             case Model.Effects.no:
             default:
                 text.text = "";
+                tweenScale.ResetToBeginning();
+                sprite.color = Color.white;
                 break;
         }
         if (Element.IsUniversal)
@@ -91,6 +99,7 @@ public class ElementScript : MonoBehaviour {
 	}
     void Awake()
     {
+        tweenScale = GetComponent<TweenScale>();
         text = GetComponentInChildren<TextMesh>();
         sprite = GetComponent<SpriteRenderer>();
         sprites = Resources.LoadAll<Sprite>("");
@@ -126,7 +135,7 @@ public class ElementScript : MonoBehaviour {
         yield return new WaitForSeconds(1.5f);
         //        this.sprite.sprite = newSprite;
         //        State = (State)int.Parse(sprite.name);
-        transform.localScale = Vector3.one*1.5f;
+        transform.localScale = Vector3.one*.7f;
         renderer.material.color = Color.white;
     }
 }

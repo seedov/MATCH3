@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: b1dcb98c158c2034bbed2fec6df34788
+guid: f4e6a40ac1141cc4694e2385d3a3e0bc
 TextureImporter:
   fileIDToRecycleName:
-    21300000: digg
-    21300002: 3
-    21300004: 2
+    21300000: icon_water
+    21300002: 2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -20,7 +19,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: .25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
@@ -41,10 +40,10 @@ TextureImporter:
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: 1
+  spritePackingTag: 
   userData: 

@@ -7,7 +7,15 @@ namespace Battle
     public abstract class Creature
     {
         public Creature Enemy { get; set; }
-        public float Health { get; set; }
+        private float health;
+        public float Health
+        {
+            get
+            {
+                return (float)Math.Round(health);
+            }
+            set { health = value; }
+        }
         public virtual void ApplyDamage(float Damage, float multiplier=1)
         {
             Health -= Damage;

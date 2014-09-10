@@ -74,6 +74,7 @@ namespace Tests
         [TestMethod]
         public void TestAttackMonsterWithChargedFireSpecialElements()
         {
+            var grid = new Grid(6, 6);
             var player = new Player();
             var monster = new Monster();
             player.Enemy = monster;
@@ -81,7 +82,9 @@ namespace Tests
 
             Assert.AreEqual(100, monster.Health);
 
-            player.CollectElements(new[] { new Element() { State = State.s1 }, new Element() { State = State.s1, Effect = Effects.radius1 }, new Element() { State = State.s1 } });
+            grid.Cells[2, 1].Element.Effect = Effects.radius1;
+            
+            player.CollectElements( new[] {grid.Cells[1,1].Element, grid.Cells[2,1].Element, grid.Cells[3,1].Element});
             player.AttackEnemy();
 
             Assert.AreEqual(100 - 3 * 2f, monster.Health);

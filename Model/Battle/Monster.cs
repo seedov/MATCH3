@@ -7,7 +7,7 @@ namespace Battle
 {
     public class Monster:Creature
     {
-        private const int minDamage = 5, maxDamage = 30;
+        private const int minDamage = 15, maxDamage = 30;
         private Random rnd = new Random();
 
         public float ApplyDamage(Element[] elements, float multiplier=1)

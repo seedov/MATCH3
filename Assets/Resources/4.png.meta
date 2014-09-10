@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: ae7c6f1ed825dd24f9dbf36b7e639e08
+guid: 15bbacb694dd5dd48820f23469fe5256
 TextureImporter:
   fileIDToRecycleName:
-    21300000: email
-    21300002: 5
-    21300004: 4
+    21300000: icon_light1
+    21300002: 4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -24,7 +23,7 @@ TextureImporter:
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
-  textureFormat: 5
+  textureFormat: -1
   maxTextureSize: 1024
   textureSettings:
     filterMode: -1
@@ -46,5 +45,5 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: 1
+  spritePackingTag: 
   userData: 
