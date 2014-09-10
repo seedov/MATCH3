@@ -561,7 +561,13 @@ namespace Tests
 
             var grid = new Grid(w, h);
 
-            grid.Cells[1, 2].Element.State = grid.Cells[2, 2].Element.State = grid.Cells[3, 2].Element.State = State.s2;
+            foreach (var c in grid.Cells)
+                c.Element.State = State.s1;
+
+            var seq = new[] {grid.Cells[0,2], grid.Cells[1, 2], grid.Cells[2, 2], grid.Cells[3, 2] };
+            foreach (var c in seq)
+                c.Element.State = State.s2;
+
             grid.Cells[3, 2].Element.Effect = Effects.star;
 
             //сохранить состояние сетки
@@ -570,15 +576,43 @@ namespace Tests
                 for (var j = 0; j < h; ++j)
                     gridState[i, j] = grid.Cells[i, j].Element.State;
 
-            grid.DestroySequence(new[] { grid.Cells[1, 2], grid.Cells[2, 2], grid.Cells[3, 2] });
+            grid.DestroySequence(seq);
 
             Assert.AreEqual(gridState[0, 0], grid.Cells[0, 0].Element.State);
-            Assert.AreEqual(gridState[1, 0], grid.Cells[1, 1].Element.State);
+            Assert.AreEqual(gridState[1, 1], grid.Cells[1, 0].Element.State);
             Assert.AreEqual(gridState[2, 0], grid.Cells[2, 0].Element.State);
-            //Assert.AreEqual(gridState[0, 3], grid.Cells[0, 0].Element.State);
+//            Assert.AreEqual(gridState[3, 2], grid.Cells[3, 0].Element.State);//элемент с эффектом зве
             Assert.AreEqual(gridState[4, 0], grid.Cells[4, 0].Element.State);
-            Assert.AreEqual(gridState[5, 0], grid.Cells[5, 1].Element.State);
+            Assert.AreEqual(gridState[5, 1], grid.Cells[5, 0].Element.State);
             Assert.AreEqual(gridState[6, 0], grid.Cells[6, 0].Element.State);
+
+            Assert.AreEqual(gridState[0, 1], grid.Cells[0, 1].Element.State);
+            Assert.AreEqual(gridState[1, 3], grid.Cells[1, 1].Element.State);
+            Assert.AreEqual(gridState[2, 4], grid.Cells[2, 1].Element.State);
+            Assert.AreEqual(gridState[4, 4], grid.Cells[4, 1].Element.State);
+            Assert.AreEqual(gridState[5, 3], grid.Cells[5, 1].Element.State);
+            Assert.AreEqual(gridState[6, 1], grid.Cells[6, 1].Element.State);
+
+            Assert.AreEqual(gridState[0, 3], grid.Cells[0, 2].Element.State);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 2].Element.State);
+            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 2].Element.State);
+            Assert.AreEqual(gridState[4, 5], grid.Cells[4, 2].Element.State);
+            Assert.AreEqual(gridState[5, 5], grid.Cells[5, 2].Element.State);
+            Assert.AreEqual(gridState[6, 3], grid.Cells[6, 2].Element.State);
+
+            Assert.AreEqual(gridState[0, 4], grid.Cells[0, 3].Element.State);
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 3].Element.State);
+            Assert.AreEqual(gridState[2, 6], grid.Cells[2, 3].Element.State);
+            Assert.AreEqual(gridState[4, 6], grid.Cells[4, 3].Element.State);
+            Assert.AreEqual(gridState[5, 6], grid.Cells[5, 3].Element.State);
+            Assert.AreEqual(gridState[6, 4], grid.Cells[6, 3].Element.State);
+
+            Assert.AreEqual(gridState[0, 6], grid.Cells[0, 4].Element.State);
+//            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 4].Element.State);
+//            Assert.AreEqual(gridState[2, 6], grid.Cells[2, 4].Element.State);
+//            Assert.AreEqual(gridState[4, 6], grid.Cells[4, 4].Element.State);
+//            Assert.AreEqual(gridState[5, 6], grid.Cells[5, 4].Element.State);
+            Assert.AreEqual(gridState[6, 6], grid.Cells[6, 4].Element.State);
 
         }
     }

@@ -45,7 +45,7 @@ namespace Battle
             var crossFireElements = collectedElements.Where(e => e.Effect == Effects.cross).Where(e => e.State == State.s1);
             var starFireElements = collectedElements.Where(e => e.Effect == Effects.star).Where(e => e.State == State.s1);
 
-            var damageMultiplier = uniFireElements.Count() == 0 ? 1 : (float)Math.Pow(1.5f, uniFireElements.Count());
+            var damageMultiplier = uniFireElements.Count() == 0 ? 1 : 1.5f* uniFireElements.Count();
             damageMultiplier *= chargedFireElements.Count() == 0 ? 1 : 2 * chargedFireElements.Count();
             damageMultiplier *= crossFireElements.Count() == 0 ? 1 : 2 * crossFireElements.Count();
             damageMultiplier *= starFireElements.Count() == 0 ? 1 : 3 * starFireElements.Count();
@@ -90,13 +90,16 @@ namespace Battle
             vampMultiplier += crossDarkElements.Count() == 0 ? 0 : 0.15f * crossDarkElements.Count();
             vampMultiplier += starDarkElements.Count() == 0 ? 0 : 0.25f * starDarkElements.Count();
 
-            foreach (var e in collectedElements)
+            var seq = Grid.GetElementsToDestroy(collectedElements); 
+            
+            //применить мультипликатор дамага ко всем элементам
+            foreach (var e in seq)// collectedElements)
             {
-                e.DamageMultiplier = damageMultiplier;
+                e.Element.DamageMultiplier = damageMultiplier;
 //                Storage.Add(e, energyMultiplier);
             }
 
-            var seq = Grid.GetElementsToDestroy(collectedElements);
+
             var elements = seq.Select(c => c.Element).ToArray();
             foreach (var e in elements)
             {
@@ -105,7 +108,7 @@ namespace Battle
             }
             Health += elements.Where(e => e.State == State.s3).Count();
             var damageApplied = ((Monster)Enemy).ApplyDamage(elements.Where(e=>e.State!=State.s3).ToArray());
-            Health += damageApplied * healMultiplier;
+     //       Health += damageApplied * healMultiplier;
             Health += damageApplied * vampMultiplier;
             ((Monster)Enemy).ApplyDamage(damageApplied*vampMultiplier);
 

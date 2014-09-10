@@ -18,7 +18,7 @@ namespace Battle
         }
         public virtual void ApplyDamage(float Damage, float multiplier=1)
         {
-            Health -= Damage;
+            health -= Damage;
             if (Health <= 0)
                 OnDied();
 
@@ -26,7 +26,7 @@ namespace Battle
 
         public Creature()
         {
-            Health = 100;
+            health = 100;
         }
 
         public abstract void AttackEnemy();
