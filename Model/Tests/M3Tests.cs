@@ -10,6 +10,21 @@ namespace Tests
     [TestClass]
     public class M3Tests
     {
+
+        Grid grid;
+
+        [TestInitialize]
+        public void InitTests()
+        {
+            var w = 7;
+            var h = 7;
+            grid = new Grid(w, h);
+
+            var i = 0;
+            foreach (var c in grid.Cells)
+                c.Element.UID = i++;
+        }
+
         [TestMethod]
         public void TestGenerateGrid()
         {
@@ -114,6 +129,7 @@ namespace Tests
         [TestMethod]
         public void TestMatchColumns()
         {
+            
             var w = 4;
             var h = 6;
 
@@ -141,7 +157,7 @@ namespace Tests
             for (var j = 0; j < 3; ++j)
                 Assert.AreEqual(verticalSequense[j], grid.Cells[0, j]);
 
-            grid.DestroyVerticalSequence(verticalSequense);
+//            grid.DestroyVerticalSequence(verticalSequense);
 
             //на место уничтоженных элементов опустились верхние
             for (var j = 0; j < 3; ++j)
@@ -159,7 +175,7 @@ namespace Tests
 
             Assert.IsNotNull(verticalSequense);
 
-            grid.DestroyVerticalSequence(verticalSequense);
+//            grid.DestroyVerticalSequence(verticalSequense);
         }
 
         [TestMethod]
@@ -217,31 +233,191 @@ namespace Tests
         [TestMethod]
         public void TestDestroySequence()
         {
-            var w = 6;
-            var h = 6;
+            var w = 7;
+            var h = 7;
 
             var grid = new Grid(w, h);
+            int ind = 0;
+            foreach (var c in grid.Cells)
+            {
+                c.Element.State = State.s4;
+                c.Element.UID = ind++;
+            }
 
-            grid.Cells[0, 1].Element.State = grid.Cells[1, 1].Element.State = grid.Cells[2, 2].Element.State = grid.Cells[2, 3].Element.State = grid.Cells[2, 4].Element.State = State.s4;
-            var sequence = new Cell[] { grid.Cells[0, 1], grid.Cells[1, 1], grid.Cells[2, 2], grid.Cells[2, 3], grid.Cells[2, 4] };
+//            grid.Cells[0, 1].Element.State = grid.Cells[1, 1].Element.State = grid.Cells[2, 2].Element.State = grid.Cells[2, 3].Element.State = grid.Cells[2, 4].Element.State = State.s4;
+            var sequence = new Cell[] { grid.Cells[3,0], grid.Cells[3, 1], grid.Cells[2, 2], grid.Cells[2, 3], grid.Cells[3, 3], grid.Cells[3, 2] };
+            foreach (var c in sequence)
+                c.Element.State = State.s2;
 
+            var gridState = new Element[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element;
+
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[3, 2], grid.Cells[3, 0].Element);
+            Assert.AreEqual(gridState[3, 4], grid.Cells[3, 1].Element);
+            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 3].Element);
+            Assert.AreEqual(gridState[2, 4], grid.Cells[2, 2].Element);
+
+ //           Assert.AreEqual(true, grid.Cells[3, 1].Element.Effect == Effects.radius1);
+
+
+        }
+
+        [TestMethod]
+        public void TestDestroySequenceWithUniversalElementAtTheEnd()
+        {
+            //ГОРИЗОНТАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ СПРАВА НАЛЕВО
+
+            var sequence = new Cell[] {grid.Cells[0,1], grid.Cells[1, 1], grid.Cells[2, 1], grid.Cells[3, 1], grid.Cells[4,1] };
+            foreach (var c in sequence)
+                c.Element.State = State.s1;
+            grid.Cells[4, 1].Element.IsUniversal = true;
+            //сделаем универсальный элемент другого типа. При соединении в цепочку он должен стать одного типа с остальными элементами в цепочке
+            grid.Cells[4, 1].Element.State = State.s2;
+
+            var w = grid.Width;
+            var h = grid.Height;
             var gridState = new State[w, h];
             for (var i = 0; i < w; ++i)
                 for (var j = 0; j < h; ++j)
                     gridState[i, j] = grid.Cells[i, j].Element.State;
 
-
             grid.DestroySequence(sequence);
 
             Assert.AreEqual(gridState[0, 2], grid.Cells[0, 1].Element.State);
             Assert.AreEqual(gridState[1, 2], grid.Cells[1, 1].Element.State);
-            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 3].Element.State);
-            Assert.AreEqual(gridState[2, 4], grid.Cells[2, 2].Element.State);
+            Assert.AreEqual(gridState[2, 2], grid.Cells[2, 1].Element.State);
+            Assert.AreEqual(gridState[3, 2], grid.Cells[3, 1].Element.State);
+            //универсальный элемент был типа s2 а должен стать типа s1, как и остальные элементы в цепочке
+            Assert.AreEqual(State.s1, grid.Cells[4, 1].Element.State);
+            Assert.AreEqual(Effects.radius1, grid.Cells[4, 1].Element.Effect);
 
-            Assert.AreEqual(true, grid.Cells[2, 2].Element.Effect == Effects.radius1);
+            //последний элемент должен стать заряженным. При этом его универсальность должна изчезнуть
+            Assert.IsFalse(grid.Cells[4, 1].Element.IsUniversal);
+
+            
+            //ГОРИЗОНТАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ СЛЕВА НАПРАВО
+            grid = new Grid(w, h);
+            sequence = new Cell[] { grid.Cells[4, 1], grid.Cells[3, 1], grid.Cells[2, 1], grid.Cells[1, 1], grid.Cells[0, 1] };
+            foreach (var c in sequence)
+                c.Element.State = State.s1;
+            grid.Cells[0, 1].Element.IsUniversal = true;
+            //сделаем универсальный элемент другого типа. При соединении в цепочку он должен стать одного типа с остальными элементами в цепочке
+            grid.Cells[0, 1].Element.State = State.s2;
+
+            w = grid.Width;
+            h = grid.Height;
+            gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                {
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+                    
+                }
+
+            grid.DestroySequence(sequence);
+
+            //универсальный элемент был типа s2 а должен стать типа s1, как и остальные элементы в цепочке
+            Assert.AreEqual(State.s1, grid.Cells[0, 1].Element.State);
+
+            Assert.AreEqual(gridState[1, 2], grid.Cells[1, 1].Element.State);
+            Assert.AreEqual(gridState[2, 2], grid.Cells[2, 1].Element.State);
+            Assert.AreEqual(gridState[3, 2], grid.Cells[3, 1].Element.State);
+            Assert.AreEqual(gridState[4, 2], grid.Cells[4, 1].Element.State);
+
+            //последний элемент должен стать заряженным. При этом его универсальность должна изчезнуть
+            Assert.AreEqual(Effects.radius1, grid.Cells[0, 1].Element.Effect);
+            Assert.IsFalse(grid.Cells[0, 1].Element.IsUniversal);
 
 
+            //ВЕРТИКАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ СВЕРХУ ВНИЗ
+            grid = new Grid(w, h);
+            sequence = new Cell[] { grid.Cells[1, 1], grid.Cells[1, 2], grid.Cells[1, 3], grid.Cells[1, 4], grid.Cells[1, 5] };
+            foreach (var c in sequence)
+                c.Element.State = State.s1;
+            grid.Cells[1, 5].Element.IsUniversal = true;
+            //сделаем универсальный элемент другого типа. При соединении в цепочку он должен стать одного типа с остальными элементами в цепочке
+            grid.Cells[1, 5].Element.State = State.s2;
+
+            w = grid.Width;
+            h = grid.Height;
+            gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                {
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+
+                }
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 2].Element.State);
+            //универсальный элемент был типа s2 а должен стать типа s1, как и остальные элементы в цепочке
+            Assert.AreEqual(State.s1, grid.Cells[1, 1].Element.State);
+
+            //последний элемент должен стать заряженным. При этом его универсальность должна изчезнуть
+            Assert.AreEqual(Effects.radius1, grid.Cells[1, 1].Element.Effect);
+            Assert.IsFalse(grid.Cells[1, 1].Element.IsUniversal);
+
+            //ВЕРТИКАЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ СНИЗУ ВВЕРХ
+            grid = new Grid(w, h);
+            sequence = new Cell[] { grid.Cells[1, 5], grid.Cells[1, 4], grid.Cells[1, 3], grid.Cells[1, 2], grid.Cells[1, 1] };
+            foreach (var c in sequence)
+                c.Element.State = State.s1;
+            grid.Cells[1, 1].Element.IsUniversal = true;
+            //сделаем универсальный элемент другого типа. При соединении в цепочку он должен стать одного типа с остальными элементами в цепочке
+            grid.Cells[1, 1].Element.State = State.s2;
+
+            w = grid.Width;
+            h = grid.Height;
+            gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                {
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+
+                }
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 2].Element.State);
+            //универсальный элемент был типа s2 а должен стать типа s1, как и остальные элементы в цепочке
+            Assert.AreEqual(State.s1, grid.Cells[1, 1].Element.State);
+
+            //последний элемент должен стать заряженным. При этом его универсальность должна изчезнуть
+            Assert.AreEqual(Effects.radius1, grid.Cells[1, 1].Element.Effect);
+            Assert.IsFalse(grid.Cells[1, 1].Element.IsUniversal);
         }
+
+        [TestMethod]
+        public void TestDestroySequenceWithChargedElementAtTheEnd()
+        {
+            var w = grid.Width;
+            var h = grid.Height;
+
+            foreach (var c in grid.Cells)
+                c.Element.State = State.s2;
+
+            var sequence = new Cell[] { grid.Cells[0, 2], grid.Cells[1, 2], grid.Cells[2, 2], grid.Cells[3, 2], grid.Cells[4, 2] };
+            foreach (var c in sequence)
+                c.Element.State = State.s1;
+
+            grid.Cells[4, 2].Element.Effect = Effects.radius1;
+
+            var gridState = new State[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element.State;
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[4, 2], grid.Cells[4, 1].Element.State);
+     //       Assert.AreEqual(gridState[4, 4], grid.Cells[4, 2].Element.State);
+        }
+
         [TestMethod]
         public void TestDestroyShortHorizontalSequence()
         {
@@ -278,19 +454,67 @@ namespace Tests
             foreach (var c in sequence)
                 c.Element.State = State.s4;
 
-            var gridState = new State[w, h];
+            var gridState = new Element[w, h];
             for (var i = 0; i < w; ++i)
                 for (var j = 0; j < h; ++j)
-                    gridState[i, j] = grid.Cells[i, j].Element.State;
+                    gridState[i, j] = grid.Cells[i, j].Element;
 
             grid.DestroySequence(sequence);
 
-            Assert.AreEqual(gridState[1, 2], grid.Cells[1, 1].Element.State);
-            Assert.AreEqual(gridState[2, 2], grid.Cells[2, 1].Element.State);
-            Assert.AreEqual(gridState[3, 2], grid.Cells[3, 1].Element.State);
-            Assert.AreEqual(gridState[4, 1], grid.Cells[4, 1].Element.State);
+            Assert.AreEqual(gridState[1, 2], grid.Cells[1, 1].Element);
+            Assert.AreEqual(gridState[2, 2], grid.Cells[2, 1].Element);
+            Assert.AreEqual(gridState[3, 2], grid.Cells[3, 1].Element);
+            Assert.AreEqual(gridState[4, 1], grid.Cells[4, 1].Element);
             Assert.IsTrue(grid.Cells[4, 1].Element.IsUniversal);
         }
+
+        [TestMethod]
+        public void TestDestroyVerticalSequence()
+        {
+            //СВЕРХУ ВНИЗ
+
+            var w = grid.Width;
+            var h = grid.Height;
+            var sequence = new Cell[] { grid.Cells[1, 1], grid.Cells[1, 2], grid.Cells[1, 3] , grid.Cells[1, 4]};
+            foreach (var c in sequence)
+                c.Element.State = State.s4;
+
+            var gridState = new Element[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element;
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 4], grid.Cells[1, 1].Element);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 2].Element);
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 3].Element);
+            Assert.IsTrue(grid.Cells[1, 1].Element.IsUniversal);
+
+            //СНИЗУ ВВЕРХ
+
+            int ind = 0;
+            grid = new Grid(w, h);
+            foreach (var c in grid.Cells)
+                c.Element.UID = ind++;
+
+            sequence = new Cell[] { grid.Cells[1, 4], grid.Cells[1, 3], grid.Cells[1, 2], grid.Cells[1, 1] };
+            foreach (var c in sequence)
+                c.Element.State = State.s4;
+
+            gridState = new Element[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element;
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 1], grid.Cells[1, 1].Element);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 2].Element);
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 3].Element);
+            Assert.IsTrue(grid.Cells[1, 1].Element.IsUniversal);
+        }
+
 
         [TestMethod]
         public void TestDestroySequenceWithHole()
@@ -353,23 +577,33 @@ namespace Tests
 
             var grid = new Grid(w, h);
 
-            //сохранить состояние сетки
-            var gridState = new State[w, h];
-            for (var i = 0; i < w; ++i)
-                for (var j = 0; j < h; ++j)
-                    gridState[i, j] = grid.Cells[i, j].Element.State;
+            var ind = 0;
+            foreach (var c in grid.Cells)
+            {
+                c.Element.UID = ind++;
+            }
 
             var seq = new[] { grid.Cells[1, 1], grid.Cells[1, 2], grid.Cells[1, 3], grid.Cells[1,4] };
             foreach (var c in seq)
+            {
                 c.Element.State = State.s2;
+            }
 
             grid.Cells[1, 3].Element.Effect = Effects.radius1;
 
+            //сохранить состояние сетки
+            var gridState = new Element[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element;
+
             grid.DestroySequence(seq);
 
-            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 1].Element.State);
-            Assert.AreEqual(gridState[0, 5], grid.Cells[0, 2].Element.State);
-            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 2].Element.State);
+            Assert.AreEqual(gridState[1, 4], grid.Cells[1, 1].Element);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 2].Element);
+            Assert.AreEqual(gridState[0, 5], grid.Cells[0, 2].Element);
+            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 2].Element);
+            Assert.IsTrue(grid.Cells[1, 1].Element.IsUniversal);
 
             //убедиться что не передалось эффектов никому
             foreach (var c in grid.Cells)
@@ -386,21 +620,21 @@ namespace Tests
             var grid = new Grid(w, h);
 
             //сохранить состояние сетки
-            var gridState = new State[w, h];
+            var gridState = new Element[w, h];
             for (var i = 0; i < w; ++i)
                 for (var j = 0; j < h; ++j)
-                    gridState[i, j] = grid.Cells[i, j].Element.State;
+                    gridState[i, j] = grid.Cells[i, j].Element;
 
             grid.Cells[2, 0].Element.State = grid.Cells[2, 1].Element.State = grid.Cells[2, 2].Element.State = State.s2;
             grid.Cells[2, 2].Element.Effect = Effects.radius2;
 
             grid.DestroySequence(new[] { grid.Cells[2, 0], grid.Cells[2, 1], grid.Cells[2, 2] });
 
-            Assert.AreEqual(gridState[0, 5], grid.Cells[0, 0].Element.State);
-            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 0].Element.State);
-            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 0].Element.State);
-            Assert.AreEqual(gridState[3, 5], grid.Cells[3, 0].Element.State);
-            Assert.AreEqual(gridState[4, 5], grid.Cells[4, 0].Element.State);
+            Assert.AreEqual(gridState[0, 5], grid.Cells[0, 0].Element);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 0].Element);
+            Assert.AreEqual(gridState[2, 5], grid.Cells[2, 0].Element);
+            Assert.AreEqual(gridState[3, 5], grid.Cells[3, 0].Element);
+            Assert.AreEqual(gridState[4, 5], grid.Cells[4, 0].Element);
 
             //убедиться что не передалось эффектов никому
             foreach (var c in grid.Cells)

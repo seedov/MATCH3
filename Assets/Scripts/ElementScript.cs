@@ -15,6 +15,8 @@ public class ElementScript : MonoBehaviour {
     float startTime, jorneyLength;
 
     private TweenScale tweenScale;
+    private TweenPosition textTweenPosition;
+    private TweenAlpha textTweenAlpha;
 
     public Texture2D SourceTexture;
 
@@ -69,31 +71,153 @@ public class ElementScript : MonoBehaviour {
         if (Element == null) return;
         ElementState = Element.State.ToString();
         ElementEffect = Element.Effect.ToString();
+
+  //      text.text = "";
+        if(textTweenPosition.value == textTweenPosition.from)
         switch (Element.Effect)
         {
-            case Model.Effects.radius1:
+            case Model.Effects.radius1: print("Ss");
+                text.text = "Charged";
+                textTweenPosition.ResetToBeginning();
+                textTweenPosition.PlayForward();
+                break;
             case Model.Effects.cross:
-            case Model.Effects.radius2:
+                text.text = "Cross";
+                textTweenPosition.ResetToBeginning();
+                textTweenPosition.PlayForward();
+                break;
             case Model.Effects.star:
-                text.text = Element.Effect.ToString();
-                tweenScale.PlayForward();
-//                sprite.color = Color.red;
+                //                            tweenScale.PlayForward();
+                text.text = "Star";
+                textTweenPosition.ResetToBeginning();
+                textTweenPosition.PlayForward();
                 break;
 
             case Model.Effects.no:
             default:
+                //                            tweenScale.ResetToBeginning();
+                sprite.sprite = Array.Find(sprites, s => s.name == "fire_normal");
                 text.text = "";
-                tweenScale.ResetToBeginning();
-                sprite.color = Color.white;
                 break;
         }
+
+
         if (Element.IsUniversal)
         {
-            sprite.sprite = Array.Find(sprites, s => s.name == "skype");
+            sprite.sprite = Array.Find(sprites, s => s.name == "universal_normal");
         }
         else
         {
-            sprite.sprite = Array.Find(sprites, s => s.name == Element.State.ToString()[1].ToString());
+            switch (Element.State)
+            {
+                case Model.State.s1:
+                    switch (Element.Effect)
+                    {
+                        case Model.Effects.radius1:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "fire_charged");
+                            break;
+                        case Model.Effects.cross:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "fire_cross");
+                            break;
+                        case Model.Effects.star:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "fire_star");
+//                            tweenScale.PlayForward();
+                            break;
+
+                        case Model.Effects.no:
+                        default:
+//                            tweenScale.ResetToBeginning();
+                            sprite.sprite = Array.Find(sprites, s => s.name == "fire_normal");
+                            break;
+                    }
+                    break;
+                case Model.State.s2:
+                    switch (Element.Effect)
+                    {
+                        case Model.Effects.radius1:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "water_charged");
+                            break;
+                        case Model.Effects.cross:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "water_cross");
+                            break;
+                        case Model.Effects.star:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "water_star");
+                            //                            tweenScale.PlayForward();
+                            break;
+
+                        case Model.Effects.no:
+                        default:
+                            //                            tweenScale.ResetToBeginning();
+                            sprite.sprite = Array.Find(sprites, s => s.name == "water_normal");
+                            break;
+                    }
+                    break;
+                case Model.State.s3:
+                    switch (Element.Effect)
+                    {
+                        case Model.Effects.radius1:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "nature_charged");
+                            break;
+                        case Model.Effects.cross:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "nature_cross");
+                            break;
+                        case Model.Effects.star:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "nature_star");
+                            //                            tweenScale.PlayForward();
+                            break;
+
+                        case Model.Effects.no:
+                        default:
+                            //                            tweenScale.ResetToBeginning();
+                            sprite.sprite = Array.Find(sprites, s => s.name == "nature_normal");
+                            break;
+                    }
+                    break;
+                case Model.State.s4:
+                    switch (Element.Effect)
+                    {
+                        case Model.Effects.radius1:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "light_charged");
+                            break;
+                        case Model.Effects.cross:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "light_cross");
+                            break;
+                        case Model.Effects.star:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "light_star");
+                            //                            tweenScale.PlayForward();
+                            break;
+
+                        case Model.Effects.no:
+                        default:
+                            //                            tweenScale.ResetToBeginning();
+                            sprite.sprite = Array.Find(sprites, s => s.name == "light_normal");
+                            break;
+                    }
+                    break;
+                case Model.State.s5:
+                    switch (Element.Effect)
+                    {
+                        case Model.Effects.radius1:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "poison_charged");
+                            break;
+                        case Model.Effects.cross:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "poison_cross");
+                            break;
+                        case Model.Effects.star:
+                            sprite.sprite = Array.Find(sprites, s => s.name == "poison_star");
+                            //                            tweenScale.PlayForward();
+                            break;
+
+                        case Model.Effects.no:
+                        default:
+                            //                            tweenScale.ResetToBeginning();
+                            sprite.sprite = Array.Find(sprites, s => s.name == "poison_normal");
+                            break;
+                    }
+                    break;
+
+            }
+//            sprite.sprite = Array.Find(sprites, s => s.name == Element.State.ToString()[1].ToString());
         }
        // print(sprite.sprite);
 	}
@@ -101,8 +225,15 @@ public class ElementScript : MonoBehaviour {
     {
         tweenScale = GetComponent<TweenScale>();
         text = GetComponentInChildren<TextMesh>();
+        textTweenAlpha = text.GetComponent<TweenAlpha>();
+        textTweenPosition = text.GetComponent<TweenPosition>();
         sprite = GetComponent<SpriteRenderer>();
         sprites = Resources.LoadAll<Sprite>("");
+    }
+
+    public void TextTweenPositionComplete()
+    {
+        text.text = "";
     }
 
     public void Destroy()

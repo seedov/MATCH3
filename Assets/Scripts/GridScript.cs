@@ -124,26 +124,26 @@ public class GridScript : MonoBehaviour {
 
     IEnumerator WaitAndDestroyVertical()
     {
-        while (true)
-        {
-            var vm = grid.FindVerticalMatch();
-            if (vm != null)
-            {
-                foreach (var c in vm)
-                {
-                    cells[c.RowIndex, c.ColIndex].DestroyElement();
-                }
+        //while (true)
+        //{
+        //    var vm = grid.FindVerticalMatch();
+        //    if (vm != null)
+        //    {
+        //        foreach (var c in vm)
+        //        {
+        //            cells[c.RowIndex, c.ColIndex].DestroyElement();
+        //        }
                 yield return new WaitForSeconds(1);
-                foreach (var c in vm)
-                    cells[c.RowIndex, c.ColIndex].InitElement();
+        //        foreach (var c in vm)
+        //            cells[c.RowIndex, c.ColIndex].InitElement();
 
-                grid.DestroyVerticalSequence(vm);
-                print("VM");
+        //        grid.DestroyVerticalSequence(vm);
+        //        print("VM");
 
-            }
-            else
-                break;
-        }
+        //    }
+        //    else
+        //        break;
+        //}
     }
 
     IEnumerator WaitAndDestroyHorizontal()

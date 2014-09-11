@@ -201,20 +201,45 @@ namespace Model
         }
 
         /// <summary>
-        /// Освободить ячейки <see cref="sequence"/>, спустить на их место стоявшие сверху элементы, заполнить освободившееся место новыми элементами
+        /// Освободить ячейки <see cref="sequence"/> за исключением <see cref=" except"/>. 
+        /// Сначала уничтожить ячейки, потом спустить до упора исключенную ячейку, потом спустить до упора стоявшие сверху элементы, заполнить освободившееся место новыми элементами
         /// </summary>
         /// <param name="sequence">Последовательность ячеек для освобождения</param>
-        public void DestroyVerticalSequence(Cell[] sequence)
+        public void DestroyVerticalSequence(Cell[] sequence, ref Cell except)
         {
+            var exceptExists = sequence.Contains(except);
+            if (exceptExists && sequence.Length == 1) return;
+
+            var index = 0;
             if (sequence.Length == 0) return;
             sequence = sequence.OrderBy(c => c.RowIndex).ToArray();
-            var destroyableElements = new List<Element>();
+
+            var destroyableElements = new List<Element>();//уничтожаемые элементы. Они после будут проинициализированы новыми
             foreach (var c in sequence)
-                destroyableElements.Add(c.Element);
+            {
+                if(except!=null && c != except)
+                    destroyableElements.Add(c.Element);
+            }
+
+            //уронить исключенную ячейку
+            if (exceptExists)
+            {
+                var lcElem = except.Element;
+                var lc = except;
+                while (lc.Down != null && lc != sequence[0])
+                {
+                    lc.Element = lc.Down.Element;
+                    lc = lc.Down;
+                }
+                lc.Element = lcElem;
+                except = lc;
+//                sequence[index] = except;
+                index++;
+            }
 
 
             var aboveCell = sequence[sequence.Length - 1].Up;
-            var currCell = sequence[0];
+            var currCell = sequence[index];
             while (aboveCell != null)
             {
                 currCell.Element = aboveCell.Element;
@@ -228,6 +253,10 @@ namespace Model
                 e.Init();
                 currCell = currCell.Up;
             }
+        }
+
+        public void FallDownCells(Cell[] cells)
+        {
         }
 
         /// <summary>
@@ -488,6 +517,8 @@ namespace Model
         /// <param name="sequence">Уничтожаемая последовательность</param>
         public void DestroySequence(Cell[] sequence)
         {
+            var sequenceType = sequence.First(c => !c.Element.IsUniversal).Element.State;
+
             var lastSelected = sequence.Length>3? sequence[sequence.Length - 1]:null;
             var lastSelectedElement = lastSelected==null?null: lastSelected.Element;
 
@@ -503,12 +534,19 @@ namespace Model
             {
                 if (vertSeq != null)
                 {
-                    DestroyVerticalSequence(vertSeq.Except(new[] { lastSelected }).ToArray());//не удаляем последний выделенных элемент
+
+//                    DestroyVerticalSequence(vertSeq.Except(new[] { lastSelected }).ToArray());//не удаляем последний выделенный элемент
+                    DestroyVerticalSequence(vertSeq, ref lastSelected);//не удаляем последний выделенный элемент
                     notVertSeq = notVertSeq.Except(vertSeq).ToArray();
                     if (vertSeq.Contains(lastSelected))
                     {
-                        lastSelected = vertSeq[0];
-         //               vertSeq[0].Element = lastSelectedElement;
+                        //передвинуть все упавшие элементы выше, чтобы они встали над тем, который не удалился
+               //         for (var i = vertSeq.Length-1; i>=0; --i )
+               //         {
+               //             vertSeq[i].Up.Element = vertSeq[i].Element;
+               //         }
+//                        lastSelected = vertSeq[0];
+//                        vertSeq[0].Element = lastSelectedElement;
                     }
                 }
             }
@@ -539,6 +577,10 @@ namespace Model
 
             if (selectedSequence != null && lastSelected!=null)
             {
+                if (lastSelected.Element.IsUniversal)
+                    lastSelected.Element.State = sequenceType;
+
+                lastSelected.Element.IsUniversal = false;
                 if (selectedSequence.Length == 3)
                     lastSelected.Element.Effect = Effects.no;
                 else if (selectedSequence.Length == 4)
