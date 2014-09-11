@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System;
+using Model;
 
 public class ElementScript : MonoBehaviour {
     public GridScript grid;
@@ -19,6 +20,8 @@ public class ElementScript : MonoBehaviour {
     private TweenAlpha textTweenAlpha;
 
     public Texture2D SourceTexture;
+
+
 
     public Model.Element Element
     {
@@ -49,6 +52,13 @@ public class ElementScript : MonoBehaviour {
 
         Element.Destroyed += () =>
         {
+			//switch(Element.Effect){
+			//case Effects.radius1:
+			text.text = "Destroyed";
+				//	break;
+			//}
+			textTweenPosition.ResetToBeginning();
+			textTweenPosition.PlayForward();
             print("destroyed");
             isJustDestroyed = true;
             renderer.material.color = new Color(255, 255, 255, 0);

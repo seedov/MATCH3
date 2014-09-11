@@ -469,6 +469,61 @@ namespace Tests
         }
 
         [TestMethod]
+        public void TestDestroyShortVerticalSequence()
+        {
+            //СВЕРХУ ВНИЗ
+
+            var w = grid.Width;
+            var h = grid.Height;
+            var sequence = new Cell[] { grid.Cells[1, 1], grid.Cells[1, 2], grid.Cells[1, 3] };
+            foreach (var c in sequence)
+                c.Element.State = State.s4;
+
+            var gridState = new Element[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element;
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 4], grid.Cells[1, 1].Element);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 2].Element);
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 3].Element);
+
+            Assert.AreEqual(gridState[1, 1], grid.Cells[1, 4].Element);
+            Assert.AreEqual(gridState[1, 2], grid.Cells[1, 5].Element);
+            Assert.AreEqual(gridState[1, 3], grid.Cells[1, 6].Element);
+            Assert.IsFalse(grid.Cells[1, 1].Element.IsUniversal);
+
+            //СНИЗУ ВВЕРХ
+
+            int ind = 0;
+            grid = new Grid(w, h);
+            foreach (var c in grid.Cells)
+                c.Element.UID = ind++;
+
+            sequence = new Cell[] { grid.Cells[1, 3], grid.Cells[1, 2] , grid.Cells[1,1]};
+            foreach (var c in sequence)
+                c.Element.State = State.s4;
+
+            gridState = new Element[w, h];
+            for (var i = 0; i < w; ++i)
+                for (var j = 0; j < h; ++j)
+                    gridState[i, j] = grid.Cells[i, j].Element;
+
+            grid.DestroySequence(sequence);
+
+            Assert.AreEqual(gridState[1, 4], grid.Cells[1, 1].Element);
+            Assert.AreEqual(gridState[1, 5], grid.Cells[1, 2].Element);
+            Assert.AreEqual(gridState[1, 6], grid.Cells[1, 3].Element);
+
+            Assert.AreEqual(gridState[1, 1], grid.Cells[1, 4].Element);
+            Assert.AreEqual(gridState[1, 2], grid.Cells[1, 5].Element);
+            Assert.AreEqual(gridState[1, 3], grid.Cells[1, 6].Element);
+            Assert.IsFalse(grid.Cells[1, 1].Element.IsUniversal);
+        }
+
+        [TestMethod]
         public void TestDestroyVerticalSequence()
         {
             //СВЕРХУ ВНИЗ

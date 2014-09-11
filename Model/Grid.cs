@@ -205,7 +205,7 @@ namespace Model
         /// Сначала уничтожить ячейки, потом спустить до упора исключенную ячейку, потом спустить до упора стоявшие сверху элементы, заполнить освободившееся место новыми элементами
         /// </summary>
         /// <param name="sequence">Последовательность ячеек для освобождения</param>
-        public void DestroyVerticalSequence(Cell[] sequence, ref Cell except)
+        public void DestroyVerticalSequence(Cell[] sequence, ref Cell except, bool useExcept=true)
         {
             var exceptExists = sequence.Contains(except);
             if (exceptExists && sequence.Length == 1) return;
@@ -219,10 +219,12 @@ namespace Model
             {
                 if(except!=null && c != except)
                     destroyableElements.Add(c.Element);
+                else if (except == null)
+                    destroyableElements.Add(c.Element);
             }
 
             //уронить исключенную ячейку
-            if (exceptExists)
+            if (exceptExists && useExcept)
             {
                 var lcElem = except.Element;
                 var lc = except;
@@ -536,7 +538,7 @@ namespace Model
                 {
 
 //                    DestroyVerticalSequence(vertSeq.Except(new[] { lastSelected }).ToArray());//не удаляем последний выделенный элемент
-                    DestroyVerticalSequence(vertSeq, ref lastSelected);//не удаляем последний выделенный элемент
+                    DestroyVerticalSequence(vertSeq, ref lastSelected, sequence.Length>3);//не удаляем последний выделенный элемент
                     notVertSeq = notVertSeq.Except(vertSeq).ToArray();
                     if (vertSeq.Contains(lastSelected))
                     {
